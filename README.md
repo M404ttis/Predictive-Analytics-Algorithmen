@@ -17,8 +17,7 @@ Siehe [`05_Modellauswahl/05_README.txt`](05_Modellauswahl/05_README.txt): Schrit
 | --- | --- | --- |
 | [`00_Kompendium`](00_Kompendium) | Nachschlagewerk über alle Tage | `00_Kompendium_Predictive_Analytics.md` (Konzepte, Formeln, Wenn-dann-Regeln), `00_Data_Science_Beginner_Cheatsheet.md` |
 | [`01_Predictive-Analytics`](01_Predictive-Analytics) | Anwendungsfelder, Modelltypen, Metriken | `01_UE2_Arbeitsauftrag1.md` |
-| [`02_Daten-und-Modelle`](02_Daten-und-Modelle) | Datenprobleme und Szenarien | `02_UE2_Arbeitsauftrag1_Bearbeitung.md` |
-| [`02_Favorita_Mini-Projekt`](02_Favorita_Mini-Projekt) | Mini-Projekt Nachfrageprognose (Kaggle Favorita) | eigene `README.md` und Berichte in `reports/` |
+| [`02_Daten-und-Modelle`](02_Daten-und-Modelle) | Datenprobleme und Szenarien, Mini-Projekt Nachfrageprognose (Kaggle Favorita) | `02_UE2_Arbeitsauftrag1_Bearbeitung.md`, Unterordner [`02_Favorita_Mini-Projekt`](02_Daten-und-Modelle/02_Favorita_Mini-Projekt) mit eigener `README.md` und Berichten in `reports/` |
 | [`03_Datenmanagement`](03_Datenmanagement) | DWH, Data Lake, Governance, Datenqualität | Lösungen, Fallstudie AutoParts, `03_MLPenguins` (EDA) |
 | [`04_Datenaufbereitung`](04_Datenaufbereitung) | Cleaning, Features, Pipelines | Bestelldaten-Diagnose (`.py` und Bericht), Features, ETL-Pipeline, Transferprojekt |
 | [`05_Modellauswahl`](05_Modellauswahl) | Modellwahl, Regression, Kreuzvalidierung | Lösungsentwurf, Notebook mit Plots, CSV mit 500 Notebooks |

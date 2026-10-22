@@ -11,6 +11,6 @@ __pycache__/
 # macOS
 .DS_Store
 
-# Große Rohdaten (Kaggle, siehe 02_Favorita_Mini-Projekt/README.md)
-02_Favorita_Mini-Projekt/data/
+# Große Rohdaten (Kaggle, siehe 02_Daten-und-Modelle/02_Favorita_Mini-Projekt/README.md)
+02_Daten-und-Modelle/02_Favorita_Mini-Projekt/data/
 *.parquet
