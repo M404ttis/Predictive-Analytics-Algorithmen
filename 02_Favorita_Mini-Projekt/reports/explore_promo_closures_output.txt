@@ -1,0 +1,118 @@
+=== A. Wann beginnt die Promotion? (Bericht 2.4) ===
+Frage: gibt es ein einheitliches Startdatum, oder startet jede Filiale anders?
+
+Erste Aktion je Filiale (Datum: Anzahl Filialen):
+date
+2014-04-01    1
+2014-04-15    3
+2014-04-29    1
+2014-05-12    1
+2014-05-13    1
+2014-05-14    3
+2014-05-15    1
+2014-05-19    3
+2014-05-20    3
+2014-05-21    7
+2014-06-11    3
+2014-06-12    2
+2014-06-13    1
+2014-06-16    1
+2014-06-17    2
+2014-06-19    1
+2014-06-25    3
+2014-06-26    2
+2014-06-27    1
+2014-06-30    5
+2014-07-01    1
+2014-07-12    1
+2014-07-25    1
+2015-02-13    1
+2015-03-20    1
+2015-07-24    1
+2015-08-21    1
+2015-10-09    1
+2017-04-21    1
+Filialen ohne je eine Aktion: 0
+
+Erste Aktion je Familie (Datum: Anzahl Familien):
+date
+2014-04-01    2
+2014-04-02    1
+2014-04-03    5
+2014-04-04    1
+2014-04-05    1
+2014-04-10    2
+2014-04-17    2
+2014-04-21    1
+2014-04-30    1
+2014-05-06    1
+2014-05-08    1
+2014-05-21    1
+2014-05-31    1
+2014-06-02    1
+2014-06-03    1
+2014-07-01    4
+2014-07-02    2
+2014-07-09    1
+2014-07-26    1
+2014-09-01    1
+2015-09-20    1
+Familien ohne je eine Aktion: ['BOOKS']
+
+Späte Starter (erste Aktion nach 2014-12-31) im Vergleich zur Filialeröffnung:
+          erste_Aktion  Eröffnung
+store_nbr                        
+20          2015-02-13 2015-02-13
+21          2015-07-24 2015-07-24
+22          2015-10-09 2015-10-09
+29          2015-03-20 2015-03-20
+42          2015-08-21 2015-08-21
+52          2017-04-21 2017-04-20
+
+=== B. Filialen zeitweise geschlossen (Bericht 2.8) ===
+Frage: Tage mit Gesamtumsatz 0 NACH der Eröffnung. Einzeltage oder längere Blöcke?
+Filial-Tage insgesamt: 601
+davon am 1. Januar: 196
+
+Filial-Tage je Filiale (Top 8):
+store_nbr
+18    114
+24    105
+25     66
+12     64
+14     42
+30     27
+43      8
+17      6
+
+Längste zusammenhängende Schließungen:
+                       min        max  count
+store_nbr block                             
+18        76    2016-08-15 2016-12-02    110
+24        93    2014-04-14 2014-07-23    101
+25        97    2016-08-22 2016-10-26     66
+12        48    2015-03-30 2015-05-28     60
+14        56    2014-08-04 2014-09-10     38
+30        112   2013-07-08 2013-07-30     23
+43        165   2016-11-14 2016-11-17      4
+17        71    2016-03-22 2016-03-23      2
+Blöcke mit mindestens 7 Tagen: 6   Einzeltage: 197
+
+=== C. Feiertagstypen (Bericht 2.1) ===
+locale      Local  National  Regional
+type                                 
+Additional     11        40         0
+Bridge          0         5         0
+Event           0        56         0
+Holiday       137        60        24
+Transfer        4         8         0
+Work Day        0         5         0
+
+Beispiel: mehrere Einträge am selben Tag und Ort
+          date        type    locale locale_name                description  transferred
+35  2012-12-24      Bridge  National     Ecuador             Puente Navidad        False
+36  2012-12-24  Additional  National     Ecuador                  Navidad-1        False
+39  2012-12-31      Bridge  National     Ecuador  Puente Primer dia del ano        False
+40  2012-12-31  Additional  National     Ecuador       Primer dia del ano-1        False
+156 2014-12-26      Bridge  National     Ecuador             Puente Navidad        False
+157 2014-12-26  Additional  National     Ecuador                  Navidad+1        False

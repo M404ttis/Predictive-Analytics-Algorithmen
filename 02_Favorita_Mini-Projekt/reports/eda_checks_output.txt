@@ -1,0 +1,128 @@
+
+======== 1. Überblick ========
+train         3,000,888 Zeilen  6 Spalten
+test             28,512 Zeilen  5 Spalten
+stores               54 Zeilen  5 Spalten
+oil               1,218 Zeilen  2 Spalten
+holidays            350 Zeilen  6 Spalten
+transactions     83,488 Zeilen  3 Spalten
+train Zeitraum: 2013-01-01 → 2017-08-15
+test  Zeitraum: 2017-08-16 → 2017-08-31
+Filialen: 54  Produktfamilien: 33
+
+======== 2. Fehlende Werte je Tabelle ========
+train → keine
+stores → keine
+oil → {'dcoilwtico': np.int64(43)}
+holidays → keine
+transactions → keine
+
+======== 3. Duplikate ========
+train: komplett identische Zeilen: 0
+train: doppelte Schlüssel (date, store, family): 0
+transactions: doppelte (date, store): 0
+oil: doppelte Daten: 0
+holidays: doppelte (date, locale_name): 7 | mehrere Einträge am selben Tag: 38
+
+======== 4. Lückenlose Zeitachse? ========
+fehlende Kalendertage im train: ['2013-12-25', '2014-12-25', '2015-12-25', '2016-12-25']
+Zeilen pro Tag (erwartet 54*33=1782): {1782: 1684}
+oil: Kalendertage ohne Eintrag: 482 | Einträge mit NaN: 43
+
+======== 5. Wertebereiche in sales / onpromotion ========
+            sales  onpromotion
+count  3000888.00   3000888.00
+mean       357.78         2.60
+std       1102.00        12.22
+min          0.00         0.00
+25%          0.00         0.00
+50%         11.00         0.00
+75%        195.85         0.00
+max     124717.00       741.00
+negative sales: 0
+Anteil sales == 0: 0.313
+Nicht ganzzahlige sales (Gewicht/kg-Artikel): 462113
+
+======== 6. Filialen: Start der Verkäufe (Null-Phasen am Anfang) ========
+8 von 54 Filialen starten erst nach Tag 30 (neu eröffnet):
+store_nbr
+20    2015-02-13
+21    2015-07-24
+22    2015-10-09
+29    2015-03-20
+36    2013-05-09
+42    2015-08-21
+52    2017-04-20
+53    2014-05-29
+Tage mit Gesamtumsatz 0 je Filiale (Top 8): {52: 1566, 22: 1011, 42: 962, 21: 934, 29: 808, 20: 773, 53: 515, 36: 131}
+
+======== 7. Produktfamilien: Null-Reihen ========
+                               total  zero_share
+family                                          
+BOOKS                         6438.0       0.970
+BABY CARE                    10051.0       0.941
+SCHOOL AND OFFICE SUPPLIES  269316.0       0.741
+HOME APPLIANCES              41601.0       0.735
+LADIESWEAR                  651159.0       0.598
+MAGAZINES                   266359.0       0.565
+PET SUPPLIES                356584.0       0.546
+HARDWARE                    103470.0       0.479
+
+======== 8. Promotion: wann ist onpromotion > 0? ========
+erster Tag mit onpromotion > 0: 2014-04-01
+Anteil Zeilen mit Promo vor/nach diesem Datum: 0.279
+Promo je Jahr (Anteil Zeilen > 0):
+y
+2013    0.000
+2014    0.100
+2015    0.209
+2016    0.351
+2017    0.453
+
+======== 9. Feiertage ========
+type        transferred
+Additional  False           51
+Bridge      False            5
+Event       False           56
+Holiday     False          209
+            True            12
+Transfer    False           12
+Work Day    False            5
+Locale: {'National': 174, 'Local': 152, 'Regional': 24}
+
+======== 10. Transactions vs. train ========
+Filial-Tage mit Umsatz, aber ohne Transaktionseintrag: 118
+Transaktionseinträge ohne Umsatz: 0
+
+======== 11. Ausreißer: größte Tageswerte je (Filiale, Familie) vs. Median ========
+store_nbr  family                    
+39         MEATS                         653.6
+18         CELEBRATION                   297.2
+53         LINGERIE                      264.8
+48         SCHOOL AND OFFICE SUPPLIES    202.8
+47         SCHOOL AND OFFICE SUPPLIES    190.3
+26         LIQUOR,WINE,BEER              187.6
+      date  store_nbr    family      sales
+2016-05-02          2 GROCERY I 124717.000
+2016-10-07         39     MEATS  89576.360
+2016-04-21         20 GROCERY I  87438.516
+2016-04-18         45 GROCERY I  76090.000
+2016-04-26          2 GROCERY I  63434.000
+
+======== 12. Erdbeben 16.04.2016 & Jahresende ========
+date
+2016-04-10    1008877.0
+2016-04-11     665349.0
+2016-04-12     651657.0
+2016-04-13     672611.0
+2016-04-14     546785.0
+2016-04-15     667606.0
+2016-04-16     862121.0
+2016-04-17    1271834.0
+2016-04-18    1345921.0
+2016-04-19    1152089.0
+2016-04-20    1062426.0
+2016-04-21    1001080.0
+2016-04-22     857059.0
+2016-04-23    1022143.0
+2016-04-24    1039370.0

@@ -1,0 +1,63 @@
+    Fenster       Modell  RMSLE  RMSLE ohne Spitzen  bewertet  ohne Prognose
+W1 Aug 2017 ETS je Reihe 0.4845              0.4844     28512              0
+W2 Dez 2016 ETS je Reihe 0.5512              0.5494     27981              3
+W3 Mär 2017 ETS je Reihe 0.4108              0.4105     27984              0
+
+Reihen je Fenster: mit Modell / Rückfall zu wenig Daten / Rückfall zu alt / Fit-Fehler / gar keine Prognose
+W1 Aug 2017: 1782 / 0 / 0 / 0 / 0
+W2 Dez 2016: 1748 / 34 / 0 / 0 / 33
+W3 Mär 2017: 1749 / 33 / 0 / 0 / 33
+
+             Benchmark  ETS je Reihe Änderung  Ziel (-10 %)  erreicht
+Fenster                                                              
+W1 Aug 2017     0.5306        0.4845    -8.7%        0.4775     False
+W2 Dez 2016     0.5938        0.5512    -7.2%        0.5345     False
+W3 Mär 2017     0.4523        0.4108    -9.2%        0.4071     False
+
+Mittel: Benchmark 0.5256, ETS 0.4822, Änderung -8.3% (Ziel: 0.4730)
+Erfolgskriterium: Mittel <= Ziel: False; Fenster einzeln erreicht: 0 von 3
+
+Familien in W1, größte Verbesserung zuerst:
+                            B2 Baseline    ETS Änderung
+HOME APPLIANCES                   0.405  0.314   -22.4%
+BOOKS                             0.101  0.081   -19.5%
+BABY CARE                         0.336  0.281   -16.4%
+SCHOOL AND OFFICE SUPPLIES        1.799  1.535   -14.7%
+HARDWARE                          0.603  0.521   -13.6%
+LADIESWEAR                        0.538  0.479   -11.1%
+AUTOMOTIVE                        0.581  0.523   -10.0%
+PLAYERS AND ELECTRONICS           0.512  0.461    -9.9%
+SEAFOOD                           0.564  0.509    -9.8%
+PET SUPPLIES                      0.522  0.473    -9.3%
+HOME AND KITCHEN II               0.512  0.470    -8.2%
+EGGS                              0.329  0.303    -8.0%
+BEVERAGES                         0.270  0.250    -7.5%
+HOME AND KITCHEN I                0.525  0.490    -6.7%
+LAWN AND GARDEN                   0.464  0.434    -6.5%
+MAGAZINES                         0.576  0.539    -6.4%
+CELEBRATION                       0.584  0.546    -6.4%
+PREPARED FOODS                    0.289  0.273    -5.7%
+BEAUTY                            0.578  0.554    -4.0%
+MEATS                             0.230  0.222    -3.7%
+DELI                              0.211  0.204    -3.6%
+POULTRY                           0.230  0.222    -3.5%
+GROCERY I                         0.204  0.198    -2.9%
+LINGERIE                          0.710  0.693    -2.5%
+PRODUCE                           0.160  0.157    -1.9%
+BREAD/BAKERY                      0.192  0.191    -0.7%
+PERSONAL CARE                     0.283  0.282    -0.3%
+LIQUOR,WINE,BEER                  0.509  0.517    +1.7%
+FROZEN FOODS                      0.295  0.305    +3.4%
+DAIRY                             0.169  0.175    +3.7%
+GROCERY II                        0.683  0.712    +4.3%
+HOME CARE                         0.280  0.292    +4.6%
+CLEANING                          0.375  0.424   +12.9%
+
+Familien mit besserem ETS: 27 von 33
+
+RMSLE je Historienlänge:
+             90 Tage  180 Tage  365 Tage
+W1 Aug 2017   0.4974    0.4943    0.4845
+W2 Dez 2016   0.5677    0.5605    0.5512
+W3 Mär 2017   0.4238    0.4125    0.4108
+Mittel        0.4963    0.4891    0.4822

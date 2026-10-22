@@ -1,0 +1,3 @@
+W1 Aug 2017: 28,510 Verkaufswerte nach 2017-07-30 durch Zufallszahlen (0 bis 5000) ersetzt
+Größter Unterschied der Prognosen (Einheiten): 0
+ERGEBNIS: keine Abhängigkeit von Verkäufen nach dem Ursprung

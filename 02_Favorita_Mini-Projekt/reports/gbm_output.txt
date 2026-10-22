@@ -1,0 +1,81 @@
+Reihen: 1782, Tage: 1688
+W1 Aug 2017: RMSLE 0.3939 (Trainingszeilen 2,482,918, 43 s)
+W2 Dez 2016: RMSLE 0.4358 (Trainingszeilen 2,393,324, 39 s)
+W3 Mär 2017: RMSLE 0.3987 (Trainingszeilen 2,428,856, 40 s)
+
+             Benchmark     ETS  LightGBM LightGBM vs. Benchmark LightGBM vs. ETS  Ziel (-10 %)  erreicht
+Fenster                                                                                                 
+W1 Aug 2017     0.5306  0.4845    0.3939                 -25.8%           -18.7%        0.4775      True
+W2 Dez 2016     0.5938  0.5512    0.4358                 -26.6%           -20.9%        0.5345      True
+W3 Mär 2017     0.4523  0.4108    0.3987                 -11.8%            -2.9%        0.4071      True
+
+Mittel: Benchmark 0.5256, ETS 0.4822, LightGBM 0.4095 (-22.1% gegen Benchmark; Ziel 0.4730)
+Erfolgskriterium: Mittel erreicht: True; Fenster einzeln erreicht: 3 von 3
+
+Familien in W1, größte Verbesserung gegenüber ETS zuerst:
+                              ETS  LightGBM Änderung
+SCHOOL AND OFFICE SUPPLIES  1.535     0.682   -55.6%
+CLEANING                    0.424     0.296   -30.1%
+PERSONAL CARE               0.282     0.199   -29.5%
+GROCERY I                   0.198     0.151   -23.7%
+DAIRY                       0.175     0.143   -18.3%
+HOME CARE                   0.292     0.244   -16.5%
+LIQUOR,WINE,BEER            0.517     0.435   -15.9%
+BEAUTY                      0.554     0.470   -15.3%
+FROZEN FOODS                0.305     0.265   -13.1%
+PRODUCE                     0.157     0.139   -11.6%
+BREAD/BAKERY                0.191     0.169   -11.4%
+LINGERIE                    0.693     0.617   -11.0%
+DELI                        0.204     0.182   -10.9%
+GROCERY II                  0.712     0.637   -10.4%
+BEVERAGES                   0.250     0.226    -9.5%
+POULTRY                     0.222     0.201    -9.3%
+MEATS                       0.222     0.207    -6.8%
+HOME AND KITCHEN I          0.490     0.463    -5.4%
+MAGAZINES                   0.539     0.511    -5.2%
+HOME AND KITCHEN II         0.470     0.448    -4.8%
+SEAFOOD                     0.509     0.485    -4.7%
+AUTOMOTIVE                  0.523     0.502    -4.1%
+EGGS                        0.303     0.296    -2.0%
+PREPARED FOODS              0.273     0.268    -1.7%
+CELEBRATION                 0.546     0.538    -1.6%
+PET SUPPLIES                0.473     0.466    -1.5%
+BABY CARE                   0.281     0.278    -1.2%
+PLAYERS AND ELECTRONICS     0.461     0.457    -1.0%
+LAWN AND GARDEN             0.434     0.433    -0.2%
+HARDWARE                    0.521     0.521    -0.1%
+HOME APPLIANCES             0.314     0.325    +3.5%
+LADIESWEAR                  0.479     0.506    +5.6%
+BOOKS                       0.081     0.088    +7.8%
+
+Familien mit besserem LightGBM: 30 von 33
+
+Merkmalswichtigkeit (Anteil am Gesamt-Gain, Mittel der drei Fenster):
+                           Anteil
+gleicher_wochentag_mittel  58.0 %
+mittel_7d                  27.2 %
+gleicher_wochentag_1        8.7 %
+letzter_wert                1.8 %
+mittel_28d                  1.4 %
+mittel_91d                  0.7 %
+family                      0.5 %
+mittel_364d                 0.4 %
+aktion                      0.2 %
+monat                       0.2 %
+alter_reihe                 0.2 %
+store                       0.2 %
+tag_im_monat                0.1 %
+gleicher_wochentag_4        0.1 %
+wochentag                   0.1 %
+gleicher_wochentag_2        0.1 %
+gleicher_wochentag_3        0.1 %
+feiertag                    0.0 %
+city                        0.0 %
+h                           0.0 %
+type                        0.0 %
+ereignis                    0.0 %
+cluster                     0.0 %
+tage_seit_letztem_wert      0.0 %
+state                       0.0 %
+arbeitstag_ausgleich        0.0 %
+aktion_bekannt              0.0 %

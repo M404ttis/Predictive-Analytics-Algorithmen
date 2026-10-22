@@ -1,0 +1,27 @@
+Rohdaten: train 3,000,888 Zeilen, test 28,512 Zeilen
+[Duplikate] doppelte Schlüssel in train entfernt: 0
+[Lücken] fehlende Kalendertage ergänzt (sales = NaN, is_closed_day = 1): ['2013-12-25', '2014-12-25', '2015-12-25', '2016-12-25'] -> 7,128 Zeilen
+[Strukturelle Nullen] Zeilen vor Filialeröffnung: 222,552; vor Einführung der Familie: 278,910; zusammen entfernt: 466,356
+[Filiale zu] Zeilen an Tagen mit Filial-Gesamtumsatz 0 nach Eröffnung (markiert): 18,998 (601 Filial-Tage)
+[Promotion] Zeilen mit promo_known = 0 in train: 596,207 (23.5%); in test: 0
+[Ölpreis] Kalendertage aufgefüllt (ffill/bfill): 529 von 1704
+[Feiertage] verlegte Feiertage ohne Wirkung am Tag entfernt: 12; Filial-Tage mit Eintrag nach Verdichtung: 9,139
+[Ausreißer] isolierte Spitzen markiert (> 10 × Nachbar-Median, > 500): 212 Zeilen
+      date  store_nbr    family      sales
+2016-05-02          2 GROCERY I 124717.000
+2016-10-07         39     MEATS  89576.360
+2016-04-26          2 GROCERY I  63434.000
+2014-12-08         35 GROCERY I  45361.000
+2015-12-14         35 GROCERY I  40351.460
+2015-12-18         26 GROCERY I  34454.000
+2016-12-12         35 GROCERY I  31125.521
+2017-04-11         32 GROCERY I  20602.000
+[Maskierung] sales_train = NaN an 25,225 Zeilen (Spitzen 212, geschlossene Tage 6,015, Filiale zu 18,998; Überschneidung: 0)
+
+[Ergebnis]
+train_clean: 2,541,660 Zeilen (von 3.000.888 + 7,128 ergänzt), 2013-01-01 bis 2017-08-15
+test_clean:  28,512 Zeilen
+Reihen (Filiale × Familie): 1782
+Anteil sales == 0 jetzt: 18.6% (vorher 31,3 %)
+Fehlende Werte train (sales: nur 25. Dezember; sales_train: zusätzlich maskierte Zeilen):
+{'sales': np.int64(6015), 'sales_train': np.int64(25225)}

@@ -1,0 +1,181 @@
+=== 1. Bisherige Regel (frühere Fassung von clean.py): Tageswert > 10 x 99. Perzentil der eigenen Reihe ===
+markierte Zeilen: 26
+                            n         max
+store_nbr family                         
+2         GROCERY I         1  124717.000
+39        MEATS             1   89576.360
+35        GROCERY I         2   45361.000
+43        POULTRY           1   12143.201
+12        MEATS             1   11609.557
+18        PERSONAL CARE     1    6047.000
+17        MEATS             1    5519.789
+22        MEATS             1    4776.274
+26        LIQUOR,WINE,BEER  2    3939.000
+24        GROCERY II        3    2931.000
+
+=== 2. Einzelfälle: Umfeld ansehen ===
+Leitfrage: Würde eine echte Nachfragewelle nur diese eine Reihe an einem Tag treffen?
+
+--- Filiale 2 · GROCERY I · 2016-05-02 ---
+               sales  onpromotion  is_holiday  is_event
+date                                                   
+2016-04-28    3023.0           61           0         1
+2016-04-29    3940.0           57           0         1
+2016-04-30    5466.0           66           0         1
+2016-05-01    6768.0           68           1         1
+2016-05-02  124717.0           59           0         1
+2016-05-03    4323.0           75           0         1
+2016-05-04    4467.0           64           0         1
+2016-05-05    3746.0           77           0         1
+2016-05-06    4698.0           61           0         1
+Median / Max der 60 Tage davor: 4136 / 63434
+Gleiche Familie, andere Filialen am Tag: Median 4269; Rang dieser Filiale 1 von 53
+Top-3-Familien dieser Filiale am Tag: {'GROCERY I': 124717.0, 'BEVERAGES': 3270.0, 'PRODUCE': 2733.0}
+
+--- Filiale 39 · MEATS · 2016-10-07 ---
+                sales  onpromotion  is_holiday  is_event
+date                                                    
+2016-10-03    164.107            0           0         0
+2016-10-04    183.746            0           0         0
+2016-10-05    119.624            0           0         0
+2016-10-06    223.671           22           0         0
+2016-10-07  89576.360            0           0         0
+2016-10-08    209.094            0           0         0
+2016-10-09    193.151            0           1         0
+2016-10-10    147.227            0           0         0
+2016-10-11    149.605            0           0         0
+Median / Max der 60 Tage davor: 154 / 5475
+Gleiche Familie, andere Filialen am Tag: Median 266; Rang dieser Filiale 1 von 53
+Top-3-Familien dieser Filiale am Tag: {'MEATS': 89576.0, 'GROCERY I': 4904.0, 'BEVERAGES': 2525.0}
+
+--- Filiale 35 · GROCERY I · 2014-12-08 ---
+              sales  onpromotion  is_holiday  is_event
+date                                                  
+2014-12-04   1309.0            9           0         0
+2014-12-05   1059.0            7           0         0
+2014-12-06   1422.0           15           0         0
+2014-12-07   1808.0            0           0         0
+2014-12-08  45361.0            3           0         0
+2014-12-09    982.0            2           0         0
+2014-12-10    834.0            7           0         0
+2014-12-11   1065.0           12           0         0
+2014-12-12   1063.0            0           0         0
+Median / Max der 60 Tage davor: 1416 / 2478
+Gleiche Familie, andere Filialen am Tag: Median 3851; Rang dieser Filiale 1 von 48
+Top-3-Familien dieser Filiale am Tag: {'GROCERY I': 45361.0, 'BEVERAGES': 3823.0, 'CLEANING': 548.0}
+
+--- Filiale 35 · GROCERY I · 2015-12-14 ---
+                sales  onpromotion  is_holiday  is_event
+date                                                    
+2015-12-10   1456.412            3           0         0
+2015-12-11   1561.828           14           0         0
+2015-12-12   2324.441            2           0         0
+2015-12-13   1805.955           10           0         0
+2015-12-14  40351.460            7           0         0
+2015-12-15   1788.450           16           0         0
+2015-12-16   2068.960           12           0         0
+2015-12-17   1803.446           25           0         0
+2015-12-18   1989.000           12           0         0
+Median / Max der 60 Tage davor: 1896 / 3904
+Gleiche Familie, andere Filialen am Tag: Median 3952; Rang dieser Filiale 1 von 53
+Top-3-Familien dieser Filiale am Tag: {'GROCERY I': 40351.0, 'BEVERAGES': 3673.0, 'CLEANING': 454.0}
+
+--- Filiale 43 · POULTRY · 2015-10-03 ---
+                sales  onpromotion  is_holiday  is_event
+date                                                    
+2015-09-29    130.025            0           0         0
+2015-09-30    103.764            0           0         0
+2015-10-01    265.735            0           0         0
+2015-10-02    236.060           15           0         0
+2015-10-03  12143.201            0           0         0
+2015-10-04    280.793            0           0         0
+2015-10-05    174.727            0           0         0
+2015-10-06    229.599            0           0         0
+2015-10-07    117.560            0           0         0
+Median / Max der 60 Tage davor: 167 / 277
+Gleiche Familie, andere Filialen am Tag: Median 363; Rang dieser Filiale 1 von 52
+Top-3-Familien dieser Filiale am Tag: {'POULTRY': 12143.0, 'GROCERY I': 4811.0, 'BEVERAGES': 3846.0}
+
+--- Filiale 12 · MEATS · 2016-10-13 ---
+                   sales  onpromotion  is_holiday  is_event
+date                                                       
+2016-10-09    121.865000            0           1         0
+2016-10-10    146.152000            0           0         0
+2016-10-11    130.062000            0           0         0
+2016-10-12    120.727005            0           0         0
+2016-10-13  11609.557000           17           0         0
+2016-10-14    127.882996            0           0         0
+2016-10-15    130.304000            0           0         0
+2016-10-16    120.465996            0           0         0
+2016-10-17    172.111010            0           0         0
+Median / Max der 60 Tage davor: 142 / 221
+Gleiche Familie, andere Filialen am Tag: Median 243; Rang dieser Filiale 1 von 53
+Top-3-Familien dieser Filiale am Tag: {'MEATS': 11610.0, 'GROCERY I': 2719.0, 'BEVERAGES': 1329.0}
+
+--- Filiale 2 · GROCERY I · 2016-04-26 ---
+              sales  onpromotion  is_holiday  is_event
+date                                                  
+2016-04-22  14454.0           36           0         1
+2016-04-23   6039.0           39           0         1
+2016-04-24   6476.0           35           0         1
+2016-04-25   3552.0           31           0         1
+2016-04-26  63434.0           30           0         1
+2016-04-27   2213.0           64           0         1
+2016-04-28   3023.0           61           0         1
+2016-04-29   3940.0           57           0         1
+2016-04-30   5466.0           66           0         1
+Median / Max der 60 Tage davor: 4216 / 23687
+Gleiche Familie, andere Filialen am Tag: Median 3361; Rang dieser Filiale 1 von 53
+Top-3-Familien dieser Filiale am Tag: {'GROCERY I': 63434.0, 'BEVERAGES': 2659.0, 'PRODUCE': 2166.0}
+
+=== 3. Naive Regel: Tageswert > 8 x lokaler Median (29 Tage zentriert) und > 300 Einheiten ===
+Treffer: 850
+Treffer nach Monat (Top 5): {Period('2015-12', 'M'): 61, Period('2014-12', 'M'): 53, Period('2013-12', 'M'): 50, Period('2016-12', 'M'): 46, Period('2016-02', 'M'): 27}
+Davon im Dezember: 210  -> saisonale Spitzen, keine Fehler
+Filiale 24 PRODUCE im Juli 2014: 8 Treffer -> Neustart nach Wiedereröffnung (Niveausprung), kein Fehler
+
+=== 4. Isolationsregel: > 10 x Median der 4 Tage davor UND der 4 Tage danach, und > 500 Einheiten ===
+isolierte Spitzen: 212  (0.0084% der Zeilen, 0.08% des Gesamtabsatzes)
+nach Familie (Top 6): {'LIQUOR,WINE,BEER': 95, 'HOME AND KITCHEN I': 30, 'MEATS': 23, 'EGGS': 11, 'FROZEN FOODS': 9, 'GROCERY I': 7}
+nach Monat (Top 5):   {Period('2015-12', 'M'): 12, Period('2016-05', 'M'): 12, Period('2016-12', 'M'): 10, Period('2014-12', 'M'): 7, Period('2013-12', 'M'): 7}
+
+Größte isolierte Spitzen:
+      date  store_nbr       family    sales    ref  ratio
+2016-05-02          2    GROCERY I 124717.0 4703.0   27.0
+2016-10-07         39        MEATS  89576.0  174.0  515.0
+2016-04-26          2    GROCERY I  63434.0 6258.0   10.0
+2014-12-08         35    GROCERY I  45361.0 1366.0   33.0
+2015-12-14         35    GROCERY I  40351.0 1896.0   21.0
+2015-12-18         26    GROCERY I  34454.0 3421.0   10.0
+2016-12-12         35    GROCERY I  31126.0 1724.0   18.0
+2017-04-11         32    GROCERY I  20602.0 1672.0   12.0
+2017-01-17         26    BEVERAGES  13409.0 1252.0   11.0
+2015-10-03         43      POULTRY  12143.0  202.0   60.0
+2016-12-05         38 FROZEN FOODS  11707.0  241.0   49.0
+2016-10-13         12        MEATS  11610.0  129.0   90.0
+2017-04-26         16     CLEANING  11377.0  937.0   12.0
+2015-12-22         10     CLEANING  10801.0 1076.0   10.0
+2017-07-10         30     CLEANING  10392.0 1000.0   10.0
+
+Kontrolle gegen clean.py: is_outlier = 1 in train_clean.parquet: 212 (hier gefunden: 212) -> gleich
+
+Filiale 35 GROCERY I, Spitzen: ['2014-12-08', '2015-12-14', '2016-12-12']  (jedes Jahr im Dezember: wiederkehrend?)
+
+=== 5. Empfindlichkeit der Schwelle (Mindestmenge 500 Einheiten) ===
+Faktor  5:  708 Treffer
+Faktor  8:  295 Treffer
+Faktor 10:  212 Treffer
+Faktor 15:  125 Treffer
+Faktor 20:   92 Treffer
+
+Große Werte (> 20.000) mit Faktor zwischen 5 und 10, von der Regel NICHT markiert:
+      date  store_nbr    family   sales     ref  ratio
+2016-04-21         20 GROCERY I 87439.0 10151.0    8.6
+2016-04-18         45 GROCERY I 76090.0 15004.0    5.1
+2016-07-04         20 GROCERY I 37515.0  6778.0    5.5
+2015-12-04         24 GROCERY I 35828.0  4706.0    7.6
+2015-11-11          2 GROCERY I 33274.0  4172.0    8.0
+2014-12-15         26 GROCERY I 32209.0  4056.0    7.9
+2016-12-05         24 GROCERY I 31689.0  5352.0    5.9
+2016-06-17         20 GROCERY I 28999.0  4869.0    6.0
+2017-04-12         32 GROCERY I 20106.0  4014.0    5.0

@@ -1,0 +1,10 @@
+1. Januar, Gesamtabsatz je Jahr: {Timestamp('2013-01-01 00:00:00'): 2512.0, Timestamp('2014-01-01 00:00:00'): 8602.0, Timestamp('2015-01-01 00:00:00'): 12774.0, Timestamp('2016-01-01 00:00:00'): 16433.0, Timestamp('2017-01-01 00:00:00'): 12083.0}
+Familien mit spätem erstem Verkauf:
+ family
+HOME AND KITCHEN II           2014-01-01
+LADIESWEAR                    2014-01-02
+SCHOOL AND OFFICE SUPPLIES    2014-01-02
+BABY CARE                     2014-03-01
+BOOKS                         2016-10-08
+Tage mit Absatz 0 über ALLE Filialen je Familie (Top 5): {'BOOKS': 1397, 'BABY CARE': 793, 'SCHOOL AND OFFICE SUPPLIES': 668, 'LADIESWEAR': 668, 'PLAYERS AND ELECTRONICS': 665}
+Anteil Absatz auf Top-3-Familien: 0.636 ['PRODUCE', 'BEVERAGES', 'GROCERY I']

@@ -1,0 +1,16 @@
+# Kursfolien: nicht öffentlich, lokal behalten
+*.pdf
+
+# Python-Umgebungen und Caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Große Rohdaten (Kaggle, siehe 02_Favorita_Mini-Projekt/README.md)
+02_Favorita_Mini-Projekt/data/
+*.parquet

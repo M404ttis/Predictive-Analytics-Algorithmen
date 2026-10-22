@@ -1,0 +1,61 @@
+Basis: W1 0.3939, W2 0.4358, W3 0.3987  (79 s)
+Basis, andere Zufallszahlen: W1 0.3954, W2 0.4392, W3 0.4011  (93 s)
+ohne Aktion: W1 0.4580, W2 0.4393, W3 0.4262  (125 s)
+ohne Feiertage und Ereignisse: W1 0.3976, W2 0.4338, W3 0.3992  (109 s)
+ohne Monat und Tag im Monat: W1 0.4016, W2 0.5074, W3 0.3980  (112 s)
+ohne Filial- und Familienmerkmale: W1 0.4145, W2 0.5135, W3 0.4204  (92 s)
+nur Verkaufshistorie und Wochentag: W1 0.4889, W2 0.5542, W3 0.4128  (83 s)
+mit Ölpreis: W1 0.3966, W2 0.4397, W3 0.4027  (116 s)
+Training nur mit promo_known = 1: W1 0.3949, W2 0.4358, W3 0.3987  (116 s)
+[keine Maskierung der Spitzen] maskierte Spitzen: 0
+keine Maskierung der Spitzen: W1 0.3965, W2 0.4334, W3 0.3997  (119 s)
+[Maskierung Faktor 5] maskierte Spitzen: 708
+Maskierung Faktor 5: W1 0.3953, W2 0.4372, W3 0.3998  (116 s)
+
+                                    W1 Aug 2017  W2 Dez 2016  W3 Mär 2017  Mittel Änderung    Δ W1    Δ W2   Δ W3
+Variante                                                                                                         
+Basis                                    0.3939       0.4358       0.3987  0.4095    +0.0%   +0.0%   +0.0%  +0.0%
+Basis, andere Zufallszahlen              0.3954       0.4392       0.4011  0.4119    +0.6%   +0.4%   +0.8%  +0.6%
+ohne Aktion                              0.4580       0.4393       0.4262  0.4412    +7.7%  +16.3%   +0.8%  +6.9%
+ohne Feiertage und Ereignisse            0.3976       0.4338       0.3992  0.4102    +0.2%   +0.9%   -0.5%  +0.1%
+ohne Monat und Tag im Monat              0.4016       0.5074       0.3980  0.4357    +6.4%   +1.9%  +16.4%  -0.2%
+ohne Filial- und Familienmerkmale        0.4145       0.5135       0.4204  0.4495    +9.8%   +5.2%  +17.8%  +5.4%
+nur Verkaufshistorie und Wochentag       0.4889       0.5542       0.4128  0.4853   +18.5%  +24.1%  +27.2%  +3.5%
+mit Ölpreis                              0.3966       0.4397       0.4027  0.4130    +0.9%   +0.7%   +0.9%  +1.0%
+Training nur mit promo_known = 1         0.3949       0.4358       0.3987  0.4098    +0.1%   +0.2%   +0.0%  +0.0%
+keine Maskierung der Spitzen             0.3965       0.4334       0.3997  0.4099    +0.1%   +0.7%   -0.6%  +0.2%
+Maskierung Faktor 5                      0.3953       0.4372       0.3998  0.4108    +0.3%   +0.4%   +0.3%  +0.3%
+
+Rauschen (Mittel der drei Fenster, anderer Zufall): 0.59%
+
+ohne Aktion: am stärksten verschlechtert (W1)
+SCHOOL AND OFFICE SUPPLIES    +110.4%
+BEAUTY                         +11.9%
+BOOKS                          +11.0%
+LINGERIE                        +6.4%
+LIQUOR,WINE,BEER                +5.9%
+Familien verschlechtert um mehr als 2 %: 8 von 33
+
+ohne Feiertage und Ereignisse: am stärksten verschlechtert (W1)
+PRODUCE          +9.1%
+DAIRY            +7.0%
+BOOKS            +6.6%
+FROZEN FOODS     +6.0%
+PERSONAL CARE    +4.6%
+Familien verschlechtert um mehr als 2 %: 11 von 33
+
+ohne Monat und Tag im Monat: am stärksten verschlechtert (W1)
+PERSONAL CARE    +33.6%
+GROCERY I        +30.4%
+CLEANING         +15.0%
+DAIRY            +12.9%
+HOME CARE        +12.5%
+Familien verschlechtert um mehr als 2 %: 17 von 33
+
+ohne Filial- und Familienmerkmale: am stärksten verschlechtert (W1)
+BOOKS                         +36.4%
+DAIRY                         +21.7%
+GROCERY I                     +17.7%
+PERSONAL CARE                 +16.2%
+SCHOOL AND OFFICE SUPPLIES    +16.1%
+Familien verschlechtert um mehr als 2 %: 27 von 33
