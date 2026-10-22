@@ -9,7 +9,7 @@ Gesammelt, damit Mitlernende von den Lösungsentwürfen, Notebooks und Spickzett
 
 ## Schnellstart: das Notebook mit den Notebook-Preisen
 
-Siehe [`05_Modellauswahl/05_README.txt`](05_Modellauswahl/05_README.txt): Schritt für Schritt von „Python installieren" bis „Notebook im Browser".
+Siehe [`05_Modellauswahl/05_README.md`](05_Modellauswahl/05_README.md): Schritt für Schritt von „Python installieren" bis „Notebook im Browser".
 
 ## Aufbau
 
