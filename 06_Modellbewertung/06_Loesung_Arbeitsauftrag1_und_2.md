@@ -159,11 +159,72 @@ Beim Screening mit Zweituntersuchung ist das tragbar. Bei einer automatischen Sa
 
 ### Rekonstruktion
 
-| Modell | Rechenweg | TP | FN | FP | TN |
-| --- | --- | :---: | :---: | :---: | :---: |
-| **A** | Recall 70 % von 300 → TP = 210, FN = 90. Accuracy 83,5 % → 1.670 richtig, also TN = 1.670 − 210 = 1.460, FP = 1.700 − 1.460 = 240. *Kontrolle:* Precision = 210 / (210 + 240) = 46,7 % ✓ (47 %) | **210** | 90 | **240** | 1.460 |
-| **B** | Recall 60 % → TP = 180, FN = 120. Accuracy 86,5 % → 1.730 richtig, TN = 1.550, FP = 150. *Kontrolle:* Precision = 180 / 330 = 54,5 %, F1 = 2 · 0,545 · 0,6 / 1,145 = 0,57 ✓ | **180** | 120 | **150** | 1.550 |
-| **C** | Recall 82 % → TP = 246, FN = 54. Precision 62 % → Alarme insgesamt = 246 / 0,62 ≈ 397, also FP ≈ 151, TN ≈ 1.549. *Accuracy* (nicht angegeben): (246 + 1.549) / 2.000 ≈ 89,8 % | **246** | 54 | **≈ 151** | ≈ 1.549 |
+**Grundidee:** Die 2.000 Testkunden bestehen aus **300 echten Kündigern** und **1.700 echten Bleibern**. Jeder echte Kündiger landet in genau einem von zwei Feldern: das Modell findet ihn (**TP**) oder übersieht ihn (**FN**). Ein Drittes gibt es nicht. Genauso landet jeder echte Bleiber in genau einem von zwei Feldern: richtig als Bleiber erkannt (**TN**) oder fälschlich als Kündiger markiert (**FP**). Deshalb kann man jedes Feld als „Rest" der jeweiligen Gruppe ausrechnen: **Gruppe − bekanntes Feld = unbekanntes Feld.**
+
+**Lesehilfe für TP, FP, FN, TN:** „Positive" heißt hier nicht „gut", sondern „das, wonach wir suchen": **Positive = das Modell sagt „kündigt"**, **Negative = das Modell sagt „bleibt"**. Dass „Churn" selbst schon negativ klingt, ist reiner Zufall und führt leicht zu einer gefühlten doppelten Verneinung. Man liest jeden Begriff **von hinten nach vorn**:
+
+1. Das **zweite Wort** (Positive/Negative) sagt, **was das Modell gesagt hat**.
+2. Das **erste Wort** (True/False) sagt, **ob das Modell damit recht hatte**.
+
+| Begriff | Modell sagt | Modell hat recht? | Wirklichkeit | Bedeutung |
+| --- | --- | :---: | --- | --- |
+| **TP** | kündigt | ja | kündigt | Kündiger gefunden |
+| **FP** | kündigt | **nein** | bleibt | **Fehlalarm**: fälschlich als Kündiger erkannt |
+| **FN** | bleibt | **nein** | kündigt | **übersehener Kündiger**: fälschlich als Bleiber erkannt |
+| **TN** | bleibt | ja | bleibt | Bleiber richtig erkannt |
+
+*Merkhilfe:* **FP = falscher Alarm** (das Modell ruft „Wolf!", es ist keiner da). **FN = durchs Netz gerutscht** (ein Kündiger wurde nicht bemerkt).
+
+**Modell A** (gegeben: Recall 70 %, Accuracy 83,5 %)
+
+- TP = 70 % · 300 = **210**
+  *Recall ist der Anteil der echten Kündiger, die das Modell findet. 70 % von 300 echten Kündigern sind 210 gefundene.*
+- FN = 300 − 210 = **90**
+  *Wir ziehen die 210 gefundenen (TP) von allen 300 echten Kündigern ab. Was übrig bleibt, sind die echten Kündiger, die das Modell nicht gefunden hat, und genau das sind die FN.*
+- richtig klassifiziert = 83,5 % · 2.000 = 1.670
+  *Accuracy ist der Anteil richtiger Antworten an allen 2.000 Kunden. „Richtig" sind die gefundenen Kündiger (TP) und die erkannten Bleiber (TN) zusammen.*
+- TN = 1.670 − 210 = **1.460**
+  *Die 1.670 richtigen Antworten bestehen aus TP + TN. Ziehen wir die 210 TP ab, bleiben die richtig erkannten Bleiber.*
+- FP = 1.700 − 1.460 = **240**
+  *Wir ziehen die 1.460 richtig erkannten Bleiber von allen 1.700 echten Bleibern ab. Der Rest wurde fälschlich als Kündiger markiert, das sind die Fehlalarme (FP).*
+- *Kontrolle:* Precision = 210 / (210 + 240) = 46,7 % ✓ (47 %)
+  *Precision ist der Anteil echter Kündiger unter allen Alarmen. Alarme sind TP + FP. Die Zahl stimmt mit der Angabe des Teams überein, die Rechnung geht also auf.*
+
+**Modell B** (gegeben: Recall 60 %, Accuracy 86,5 %, F1 0,57)
+
+- TP = 60 % · 300 = **180**
+  *60 % der 300 echten Kündiger werden gefunden.*
+- FN = 300 − 180 = **120**
+  *Von allen 300 echten Kündigern ziehen wir die 180 gefundenen ab. Der Rest wurde übersehen (FN).*
+- richtig klassifiziert = 86,5 % · 2.000 = 1.730
+  *Accuracy mal alle Kunden ergibt die Zahl der richtigen Antworten (TP + TN).*
+- TN = 1.730 − 180 = **1.550**
+  *Von den richtigen Antworten ziehen wir die 180 TP ab. Übrig bleiben die richtig erkannten Bleiber.*
+- FP = 1.700 − 1.550 = **150**
+  *Von allen 1.700 echten Bleibern ziehen wir die 1.550 richtig erkannten ab. Der Rest sind die Fehlalarme (FP).*
+- *Kontrolle:* Precision = 180 / (180 + 150) = 54,5 %, F1 = 2 · 0,545 · 0,6 / (0,545 + 0,6) = 0,57 ✓
+  *F1 ist das harmonische Mittel aus Precision und Recall. Es stimmt mit der Angabe von Team B überein.*
+
+**Modell C** (gegeben: Recall 82 %, Precision 62 %, AUC; keine Accuracy)
+
+- TP = 82 % · 300 = **246**
+  *82 % der 300 echten Kündiger werden gefunden.*
+- FN = 300 − 246 = **54**
+  *Von allen 300 echten Kündigern ziehen wir die 246 gefundenen ab. Der Rest wurde übersehen (FN).*
+- Alarme insgesamt = TP / Precision = 246 / 0,62 ≈ 397
+  *Precision = TP / Alarme. Stellen wir das nach „Alarme" um, teilen wir die 246 echten Treffer durch die Precision. So viele Kunden hat das Modell insgesamt als Kündiger markiert.*
+- FP = 397 − 246 ≈ **151**
+  *Die Alarme bestehen aus echten Treffern (TP) und Fehlalarmen (FP). Ziehen wir die 246 TP ab, bleiben die Fehlalarme.*
+- TN = 1.700 − 151 ≈ **1.549**
+  *Von allen 1.700 echten Bleibern ziehen wir die 151 fälschlich markierten ab. Der Rest wurde richtig als Bleiber erkannt.*
+- *Accuracy* (nicht angegeben): (246 + 1.549) / 2.000 ≈ 89,8 %
+  *Richtige Antworten (TP + TN) geteilt durch alle Kunden. Das ist die Zahl, die Team C nicht genannt hat.*
+
+| Modell | TP | FN | FP | TN |
+| --- | :---: | :---: | :---: | :---: |
+| **A** | **210** | 90 | **240** | 1.460 |
+| **B** | **180** | 120 | **150** | 1.550 |
+| **C** | **246** | 54 | **≈ 151** | ≈ 1.549 |
 
 *Die Rekonstruktion ist wegen gerundeter Angaben auf wenige Fälle genau. Alle Rückrechnungen stimmen mit den Angaben der Teams überein, die Zahlen der Teams sind also in sich stimmig.*
 
