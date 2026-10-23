@@ -56,7 +56,8 @@ from sklearn.metrics import mean_absolute_error, r2_score, root_mean_squared_err
 from sklearn.model_selection import KFold, cross_validate, train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.tree import DecisionTreeRegressor
+from sklearn.model_selection import validation_curve
+from sklearn.tree import DecisionTreeRegressor, export_text, plot_tree
 
 sns.set_theme(style="whitegrid")
 
@@ -309,6 +310,86 @@ plt.show()
 # <div style="background:#e0f2f1;border-left:6px solid #009688;color:#004d40;padding:10px 14px;border-radius:4px"><b>Takeaway:</b> <b>RAM</b> (225) und <b>SSD</b> (167) tragen das Modell. Display (21), Akku (3) und Gewicht (0,6) kann man fast weglassen. Ein einfacheres Modell wäre einen Test wert.</div>
 
 # %% [markdown]
+# ## 4b · Den Entscheidungsbaum sichtbar machen
+# Ein Entscheidungsbaum ist erklärbar, weil man **jede Entscheidung nachlesen** kann. Dazu zeichnen wir ihn.
+#
+# **So liest du die Zeichnung:**
+# - Jeder **Kasten** ist eine **Ja/Nein-Frage** zu einem Merkmal, z. B. `RAM_GB <= 48.0`.
+#   Trifft sie zu (**Ja**, in der Zeichnung `True`), geht es zum **linken** Ast, sonst (`False`) zum **rechten**.
+# - `samples` = wie viele Notebooks aus den Lern-Daten diesen Kasten erreichen.
+# - `value` = der **mittlere Preis** dieser Notebooks. Die Farbe zeigt ihn: je dunkler, desto teurer.
+# - Die **Blätter** ganz unten sind die **Preisempfehlung**: Man landet dort und liest `value` ab.
+#
+# Wir nehmen **Tiefe 3** (höchstens 3 Fragen, 8 Blätter), damit die Zeichnung lesbar bleibt.
+# Den Wert kannst du in `TIEFE` ändern.
+
+# %%
+TIEFE = 3
+baum = DecisionTreeRegressor(max_depth=TIEFE, random_state=42).fit(X_train, y_train)
+
+fig, ax = plt.subplots(figsize=(18, 8))
+plot_tree(baum, feature_names=MERKMALE, filled=True, rounded=True, impurity=False,
+          precision=0, fontsize=10, ax=ax)
+ax.set_title(f"Entscheidungsbaum (Tiefe {TIEFE}): Preis in EUR als value")
+plt.show()
+
+# %% [markdown]
+# <div style="background:#e0f2f1;border-left:6px solid #009688;color:#004d40;padding:10px 14px;border-radius:4px"><b>Takeaway:</b> Der Baum stellt <b>von selbst</b> zuerst die RAM-Frage (≤ 48 GB, also 64 GB gegen den Rest) und danach die SSD-Frage (≤ 1536 GB, also 2 TB gegen den Rest). Das deckt sich mit der Wichtigkeit aus Plot 6. Display erscheint nur ein einziges Mal ganz unten. Die acht Blätter nennen Preise von etwa 943 € bis 1.996 €.</div>
+
+# %% [markdown]
+# ### Der Baum als Text und der Weg eines Beispielgeräts
+# Dieselben Regeln als Text, und für ein **Beispielgerät** (15 Zoll, 65 Wh, 16 GB RAM, 512 GB SSD, 1400 g) der Weg durch den Baum:
+# Genau so lässt sich eine Preisempfehlung gegenüber dem Vertrieb **Schritt für Schritt begründen**.
+
+# %%
+print(export_text(baum, feature_names=MERKMALE, decimals=0))
+
+beispiel = pd.DataFrame([{"Display_Zoll": 15, "Akku_Wh": 65, "RAM_GB": 16, "SSD_GB": 512, "Gewicht_g": 1400}])
+knoten = baum.decision_path(beispiel).indices          # alle Knoten, die das Gerät durchläuft
+b = baum.tree_
+print("Weg des Beispielgeräts:")
+for k in knoten:
+    if b.children_left[k] == -1:                       # Blatt: hier steht die Empfehlung
+        print(f"  -> Blatt: Preisempfehlung {b.value[k][0][0]:,.0f} EUR")
+    else:
+        merkmal, grenze = MERKMALE[b.feature[k]], b.threshold[k]
+        wert = beispiel[merkmal].iloc[0]
+        print(f"  Frage: {merkmal} <= {grenze:.0f}?  Gerät hat {wert}  ->  {'ja' if wert <= grenze else 'nein'}")
+
+# %% [markdown]
+# <div style="background:#e0f2f1;border-left:6px solid #009688;color:#004d40;padding:10px 14px;border-radius:4px"><b>Takeaway:</b> Das Beispielgerät durchläuft drei Fragen (RAM ≤ 48? ja, SSD ≤ 1536? ja, RAM ≤ 24? ja) und landet bei <b>943 €</b>. Die lineare Regression sagte 969 €. Der Baum ist <b>grober</b>: Er kennt nur acht Preise, die Regression rechnet jeden Wert einzeln aus. Dafür ist jede Frage lesbar.</div>
+
+# %% [markdown]
+# ### Wie tief darf der Baum sein?
+# Je mehr Fragen, desto genauer passt der Baum zu den Lern-Daten, aber desto eher **lernt er Zufälle auswendig** (Overfitting).
+# Wir vergleichen den Fehler auf den **Lern-Daten** mit dem Fehler auf **ungesehenen** Daten (5-fache Kreuzvalidierung, wie in Abschnitt 3).
+
+# %%
+tiefen = range(1, 13)
+fehler_lernen, fehler_test = validation_curve(
+    DecisionTreeRegressor(random_state=42), X, y, param_name="max_depth", param_range=tiefen,
+    cv=cv, scoring="neg_mean_absolute_error")
+kurve = pd.DataFrame({"Tiefe": list(tiefen),
+                      "Lern-Daten": -fehler_lernen.mean(axis=1),
+                      "Ungesehene Daten": -fehler_test.mean(axis=1)})
+print(kurve.round(1).to_string(index=False))
+
+fig, ax = plt.subplots(figsize=(8, 4.5))
+ax.plot(kurve["Tiefe"], kurve["Lern-Daten"], marker="o", label="Lern-Daten")
+ax.plot(kurve["Tiefe"], kurve["Ungesehene Daten"], marker="o", label="Ungesehene Daten")
+ax.axhline(33.1, color="seagreen", ls="--", label="Lineare Regression (33 €)")
+ax.set(title="Fehler (MAE) je Baumtiefe", xlabel="Tiefe des Baums", ylabel="MAE in EUR")
+ax.legend()
+plt.show()
+
+# %% [markdown]
+# <div style="background:#e0f2f1;border-left:6px solid #009688;color:#004d40;padding:10px 14px;border-radius:4px"><b>Takeaway:</b> Der Fehler auf den Lern-Daten sinkt mit jeder Frage gegen null, der auf <b>ungesehenen</b> Daten nicht: Er ist bei Tiefe 7 am kleinsten (etwa 46 €) und steigt danach leicht auf etwa 49 €, während der Lernfehler gegen 1 € fällt: Das ist <b>Overfitting</b>. Selbst der beste Baum bleibt schlechter als die lineare Regression (33 €). Die Tiefe 4 aus dem Modellvergleich (58 €) war also nicht die beste Baumtiefe, aber ein lesbarer Kompromiss.</div>
+
+# %% [markdown]
+# **Und Random Forest und Gradient Boosting?** Sie bestehen aus **200 bzw. 100 Bäumen**, die zusammen entscheiden. Das lässt sich nicht
+# sinnvoll zeichnen: Genau darum gelten sie als **Black Box**. Der einzelne, flache Baum oben ist die erklärbare Variante.
+
+# %% [markdown]
 # ## 5 · Fehleranalyse am Test-Set
 
 # %%
@@ -361,7 +442,7 @@ plt.show()
 # ## 6 · Beispiel: Preisempfehlung für ein neues Gerät
 
 # %%
-neu = pd.DataFrame([{"Display_Zoll": 15, "Akku_Wh": 65, "RAM_GB": 512, "SSD_GB": 512, "Gewicht_g": 1400}])
+neu = pd.DataFrame([{"Display_Zoll": 15, "Akku_Wh": 65, "RAM_GB": 16, "SSD_GB": 512, "Gewicht_g": 1400}])
 print(neu.to_string(index=False))
 print(f"empfohlener Preis: {linear.predict(neu)[0]:,.0f} EUR")
 
