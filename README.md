@@ -21,6 +21,7 @@ Siehe [`05_Modellauswahl/05_README.md`](05_Modellauswahl/05_README.md): Schritt 
 | [`03_Datenmanagement`](03_Datenmanagement) | DWH, Data Lake, Governance, Datenqualität | Lösungen, Fallstudie AutoParts, `03_MLPenguins` (EDA) |
 | [`04_Datenaufbereitung`](04_Datenaufbereitung) | Cleaning, Features, Pipelines | Bestelldaten-Diagnose (`.py` und Bericht), Features, ETL-Pipeline, Transferprojekt |
 | [`05_Modellauswahl`](05_Modellauswahl) | Modellwahl, Regression, Kreuzvalidierung, Churn-Fallstudie | Lösungsentwurf, Notebook mit Plots, CSV mit 500 Notebooks, `05_Fallstudie_TeleCom_Churn.md` |
+| [`06_Modellbewertung`](06_Modellbewertung) | Fehlerarten, Metriken, Modellvergleich mit Geschäftswert | `06_Loesung_Arbeitsauftrag1_und_2.md` |
 
 Die Dateien tragen die Nummer des Tages als Präfix (`04_...` gehört zu Tag 4).
 

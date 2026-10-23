@@ -784,6 +784,7 @@ mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 | `05_Modellauswahl/05_Loesung_Arbeitsauftrag1_und_2.md` | Problemtyp zuordnen (Notaufnahme), Modellwahl abwägen (Nachfrage, Notebook-Preise), Risiken | Modellwahl |
 | `05_Modellauswahl/05_Notebookpreise_Modell.ipynb` und `.py` | Regression auf 500 Notebooks: Plots, Kreuzvalidierung, Modellvergleich | Modellvergleich praktisch |
 | `05_Modellauswahl/05_Fallstudie_TeleCom_Churn.md` | Churn: Zielgröße, Klassifikation, wirtschaftliche Schwelle, Leakage, Risiken | Modellwahl, Klassifikation |
+| `06_Modellbewertung/06_Loesung_Arbeitsauftrag1_und_2.md` | FP/FN-Szenarien, Modellvergleich über Confusion Matrix, Warnsignale, Geschäftswert in Euro | Metriken, Modellbewertung |
 
 ### 14.2 Glossar
 
