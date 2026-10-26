@@ -22,6 +22,7 @@ Siehe [`05_Modellauswahl/05_README.md`](05_Modellauswahl/05_README.md): Schritt 
 | [`04_Datenaufbereitung`](04_Datenaufbereitung) | Cleaning, Features, Pipelines | Bestelldaten-Diagnose (`.py` und Bericht), Features, ETL-Pipeline, Transferprojekt |
 | [`05_Modellauswahl`](05_Modellauswahl) | Modellwahl, Regression, Kreuzvalidierung, Churn-Fallstudie | Lösungsentwurf, Notebook mit Plots, CSV mit 500 Notebooks, `05_Fallstudie_TeleCom_Churn.md` |
 | [`06_Modellbewertung`](06_Modellbewertung) | Fehlerarten, Metriken, Modellvergleich mit Geschäftswert | `06_Loesung_Arbeitsauftrag1_und_2.md` |
+| [`07_Use-Case-Design`](07_Use-Case-Design) | Vom Geschäftsproblem zum Use Case (Zielgröße, Modelltyp, Handlung), Regressionsmaße MAE, RMSE, MAPE | `07_Loesung_Arbeitsauftrag1.md`, `07_Fallstudie_OmniRetail.md` |
 
 Die Dateien tragen die Nummer des Tages als Präfix (`04_...` gehört zu Tag 4).
 
