@@ -382,6 +382,90 @@ A **metric** is a number that compares predictions with the true answers on unse
 
 (`Σ` means "sum over all rows"; `|…|` is the absolute value; `ŷ` is read "y-hat", the prediction.)
 
+#### More regression metrics: which are worth it?
+
+*(Worked through on day 7, `07_Use-Case-Design/07_Loesung_Arbeitsauftrag1und2.md`, section 8; the bias and MedAE discussion is from day 8, `08_Praxis-Use-Cases/08_Loesung_Arbeitsauftrag1und2.md`.)*
+
+Judging a model by MAE and RMSE alone is like judging a car by fuel consumption only. Notation: `yᵢ` = actual value, `ŷᵢ` = prediction (the hat means "estimated"), `eᵢ = yᵢ − ŷᵢ` = error. Here `eᵢ > 0` means the model predicted **too low**, `eᵢ < 0` means **too high**.
+
+The values come from the day-7 exercise (two models, 10 rows each). Model A has even errors (2 or 3). Model B has eight errors of 1 and two errors of 15.
+
+| Metric | Formula | Model A | Model B | When useful |
+|---|---|---:|---:|---|
+| **MAE** | (1/n) · Σ \|eᵢ\| | 2.40 | 3.80 | Typical error in the **unit** of the data. Every error counts linearly. |
+| **RMSE** | √[(1/n) · Σ eᵢ²] | 2.45 | 6.77 | When **big errors are disproportionately costly**. |
+| **MAPE** | (100/n) · Σ \|eᵢ\| / \|yᵢ\| | 2.27 % | 6.83 % | Error **in percent**, comparable across data of different size. |
+| **WAPE** (weighted MAPE) | Σ \|eᵢ\| / Σ \|yᵢ\| | 2.21 % | 6.73 % | Like MAPE, but **stable with small or zero actuals** (common in demand planning). |
+| **sMAPE** (symmetric MAPE) | (100/n) · Σ 2·\|eᵢ\| / (\|yᵢ\| + \|ŷᵢ\|) | 2.27 % | 6.82 % | When over- and under-prediction should be treated alike. |
+| **ME** (Mean Error, **bias**) | (1/n) · Σ eᵢ | 0.0 | 0.0 | Is the model **systematically** too high or too low? |
+| **MedAE** (median absolute error) | median of \|eᵢ\| | 2 | 1 | **Typical** error, insensitive to outliers. |
+| **Max error** | max \|eᵢ\| | 3 | 15 | The **worst single case**. |
+| **R²** | 1 − SS_res / SS_tot | 0.96 | 0.25 | What **share of the variation** in `y` does the model explain? (1 = all, 0 = no better than the mean) |
+
+`SS_res = Σ eᵢ²` (sum of squared errors), `SS_tot = Σ (yᵢ − ȳ)²` (sum of squared deviations from the mean `ȳ`).
+
+**How to read the numbers**
+
+- **RMSE ≥ MAE always.** They are equal only if all absolute errors are equal. The **ratio RMSE / MAE** is a diagnostic: near 1 means even errors (Model A: 1.02), clearly above 1 means a few large errors dominate (Model B: 1.78). The maximum is √n.
+- Model B's two errors of 15 make up 79 % of its MAE sum but **98 % of its squared-error sum**. Squaring is what makes RMSE react.
+- **ME = 0 for both models** because the errors are half positive and half negative and cancel. That is why the plain mean of errors is never used for the *size* of the error. ME still has a job: it shows **direction**.
+- Model A and B have different value ranges (about 108 vs. about 57), so their MAEs are not directly comparable. In percent (MAPE/WAPE) A is clearly better.
+
+**MAE, MedAE or RMSE: which one?** Each metric assumes a different cost shape.
+
+| Metric | Assumed cost shape | Reaction to outliers | Answers the question |
+|---|---|---|---|
+| **MAE** | linear: 20 off costs twice as much as 10 off | every error counts in proportion | What does the error cost on average, bad days included? |
+| **MedAE** | none (pure location measure) | outliers ignored | How far off is the model on a **typical** day? |
+| **RMSE** | more than linear: 20 off costs four times as much as 10 off | big errors dominate | How bad are the big misses? |
+
+RMSE is **not** always better. Use MAE when costs are roughly linear and the bad days are real. Use MedAE when outliers are noise nobody could predict (till glitch, strike, data entry error). Use RMSE when one big miss is much worse than several small ones. Read them side by side: MAE clearly above MedAE means a good typical day but a few very bad days, so look at those days (data error, or a real costly miss?). Caution: MedAE can make a model look fine that fails badly on a few *important* days (Christmas, main promotion).
+
+**Why ME (bias) on top?** MAE, MedAE and RMSE drop the sign, so they say *how far* but not *in which direction*. Two forecasts can have the same MAE and still be very different:
+
+```
+ME = (1/n) · Σ (yᵢ − ŷᵢ)       ME > 0: forecast too low on average
+                               ME < 0: forecast too high on average
+
+Actual = 100 on five days
+Forecast A: 90, 110, 90, 110, 100   →  MAE = 40/5 = 8,  ME = 0/5 = 0
+Forecast B: 92, 92, 92, 92, 92      →  MAE = 40/5 = 8,  ME = 40/5 = +8
+```
+
+B is 8 too low every day (always sold out), but MAE shows nothing. Two kinds of error:
+
+| | Systematic error (bias) | Scatter ("restless" model) |
+|---|---|---|
+| Example | B: always 8 too low | A: sometimes +10, sometimes −10 |
+| Visible as | ME ≠ 0 | ME ≈ 0 but MAE > 0 |
+| Pattern in the error? | Yes, always the same direction | No |
+| Fix | often simple: add a constant (B + 8 = 100) | hard: better features or a better model (shifting A by 8 gives +18 and −2) |
+
+A constant shift only treats the symptom. If the bias comes from the data (e.g. sold-out days understate demand) or varies by weekday, compute the ME per weekday or group and fix the cause. ME = 0 does not mean the model is good, since positive and negative errors cancel: **MAE says how big, ME says which way.**
+
+**MAPE: strengths and traps**
+
+| Trap | Explanation |
+|---|---|
+| **Actual = 0** | Division by zero, MAPE undefined. A real problem for demand with zero-sales days. |
+| **Small actuals** | A small error on a small value becomes a huge percentage and dominates the average. |
+| **Asymmetry** | Under-predictions are capped at 100 %, over-predictions are unbounded, so MAPE punishes "too high" more. |
+| **No link to cost** | 10 % off on a 1 € item counts the same as 10 % off on a 1,000 € item. |
+
+Remedy: WAPE (sums instead of single ratios) or sMAPE.
+
+**Which metric for which question?**
+
+| Question | Metric |
+|---|---|
+| How big is the **typical** error in the unit? | **MAE** (plus MedAE) |
+| Are **big outliers** especially costly? | **RMSE** |
+| Compare **different datasets** or magnitudes? | **MAPE or WAPE** (WAPE when zeros occur) |
+| **Systematically** too high or too low? | **ME (bias)** |
+| How much of the variation is explained? | **R²** (rule of thumb for the overall picture) |
+
+In practice, show **several metrics together**, at least MAE, RMSE and MAPE. When "too much" and "too little" cost different amounts (stock, orders), use an **asymmetric loss**, e.g. the quantile (pinball) loss: order at the quantile `τ = C_under / (C_under + C_over)` of the forecast, e.g. 1.20 € lost margin vs. 0.30 € waste gives τ = 0.8, so order at the 80 % quantile, slightly above the expected demand.
+
 ### Choosing a metric: match the cost of mistakes
 
 **Total cost = FN × C_FN + FP × C_FP**, with C_FN and C_FP the price of each mistake type.
