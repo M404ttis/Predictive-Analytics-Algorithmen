@@ -623,6 +623,16 @@ Jeden Schritt **dokumentieren und versionieren** (Code, Mapping-Tabellen in Git)
 | Modell glänzt im Training, schlecht im Test | Overfitting: einfacheres Modell, mehr Daten |
 | Modell wird im Betrieb schlechter | Drift: Monitoring, neu trainieren |
 | Zeitdruck und lückenhafte Daten | einfaches robustes Basismodell, iterativ verbessern |
+| Aktion lohnt sich, wenn p · Nutzen > Kosten | Schwelle p* = Kosten / Nutzen (Betrug 1,25 %, Churn ca. 34 %) |
+| Unterbestellen teurer als Überbestellen | Quantil τ = C_unter / (C_unter + C_über) statt Mittelwert |
+| Wenige extreme Fehler dominieren | MedAE oder MAE statt RMSE |
+| MAE gleich, aber ME ≠ 0 | Bias: systematisch verschoben, Korrektur durch Verschiebung |
+| Accuracy hoch bei 1 % Betrug | Recall, Precision und Kosten statt Accuracy |
+| Trainingsdaten enthalten nur Verbliebene (Kündiger gelöscht) | Survivorship: Labels sichern, Kontrollgruppe zufällig bilden |
+| Pilot in der falschen Jahreszeit | Saison und Aktionen als Merkmale, Pilot über volle Saison |
+| Zielwert ist aus Spalten berechenbar (Rendite aus Miete und Preis) | diese Spalten nicht als Merkmale: Leakage |
+| Budget knapp, Angebot nur Lizenz | Gesamtkosten (TCO) rechnen, Proof of Concept zuerst |
+| Kleines IT-Team, Daten wachsen | gemanagte Cloud, Buy für Standard, Build nur für Kernwissen |
 
 ---
 
@@ -788,6 +798,10 @@ mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 | `07_Use-Case-Design/07_Loesung_Arbeitsauftrag1und2.md` | AA1: Kundenbindung (Fitness-Fall), Lagerkosten, Marketingwirkung als Use Cases. AA2: MAE, RMSE, MAPE und weitere Regressionsmaße | Use-Case-Design, Regressionsmetriken |
 | `07_Use-Case-Design/07_Fallstudie_OmniRetail.md` | OmniRetail: drei Problemfelder (Lager, Churn, Retouren) Use Cases zuordnen, Modelltypen, Priorisierung mit Punkteschema, Phasenplan | Use-Case-Priorisierung |
 | `07_Use-Case-Design/07_Transferprojekt_Bergmann_Baumaerkte.md` | Bergmann Baumärkte: Analytics-Startplan (Auswahl, Bewertungsmatrix mit Gewichten, Quartals- und Budgetplan, ROI, Risiken, Kernentscheidung Quick Win vs. Strategie) | Use-Case-Strategie, ROI |
+| `08_Praxis-Use-Cases/08_Loesung_Arbeitsauftrag1und2.md` | AA1: Fehlerkosten, Metrik und Schwelle für Demand, Wartung, Churn, Betrug (MAE, MedAE, RMSE, Bias, Quantil). AA2: Anti-Muster Fälle A bis D mit Diagnose und Therapie | Fehlerkosten, Schwellen, Anti-Muster |
+| `08_Praxis-Use-Cases/MLPenguins2.py` und `.ipynb` | Pinguine mit seaborn, Funktion für alle seaborn-Datensätze, jupytext-Paar | Praxis, Notebook-Workflow |
+| `09_Plattformen/09_Loesung_Arbeitsauftrag0_1_2.md` | AA0: Mietrendite als Zielwert, Regression oder Klasse, Leakage. AA1: Lücken, Zielarchitektur (Mermaid). AA2: Toolentscheid mit Bewertungsmatrix | Plattformen, Leakage, Toolwahl |
+| `09_Plattformen/09_Loesung_Fallstudie_Schmidt.md` | Schmidt GmbH: Anforderungen, Datenfluss (Mermaid), Build/Buy, Cloud, Governance, Stufenplan, Reflexion | Plattformstrategie |
 
 ### 14.2 Glossar
 

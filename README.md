@@ -23,6 +23,8 @@ Siehe [`05_Modellauswahl/05_README.md`](05_Modellauswahl/05_README.md): Schritt 
 | [`05_Modellauswahl`](05_Modellauswahl) | Modellwahl, Regression, Kreuzvalidierung, Churn-Fallstudie | Lösungsentwurf, Notebook mit Plots, CSV mit 500 Notebooks, `05_Fallstudie_TeleCom_Churn.md` |
 | [`06_Modellbewertung`](06_Modellbewertung) | Fehlerarten, Metriken, Modellvergleich mit Geschäftswert | `06_Loesung_Arbeitsauftrag1_und_2.md` |
 | [`07_Use-Case-Design`](07_Use-Case-Design) | Vom Geschäftsproblem zum Use Case (Zielgröße, Modelltyp, Handlung), Regressionsmaße MAE, RMSE, MAPE | `07_Loesung_Arbeitsauftrag1und2.md`, `07_Fallstudie_OmniRetail.md`, `07_Transferprojekt_Bergmann_Baumaerkte.md` |
+| [`08_Praxis-Use-Cases`](08_Praxis-Use-Cases) | Fehlerkosten, Metrik und Schwelle je Use Case (Demand, Wartung, Churn, Betrug), Anti-Muster (Survivorship, Accuracy-Falle, fehlende Saison, Drift), Bias (ME) | `08_Loesung_Arbeitsauftrag1und2.md`, `MLPenguins2.py` und `.ipynb` (seaborn-Datensätze) |
+| [`09_Plattformen`](09_Plattformen) | Mietrendite als Zielwert (Leakage), Lücken in der Analytics-Landschaft, Zielarchitektur, Toolentscheid (Bewertungsmatrix), Fallstudie Schmidt (Build/Buy, Cloud, Governance) | `09_Loesung_Arbeitsauftrag0_1_2.md`, `09_Loesung_Fallstudie_Schmidt.md`, `0900_UE0_Arbeitsauftrag0_Daten.csv` |
 
 Die Dateien tragen die Nummer des Tages als Präfix (`04_...` gehört zu Tag 4).
 
