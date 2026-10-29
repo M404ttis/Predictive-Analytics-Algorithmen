@@ -14,3 +14,6 @@ __pycache__/
 # Große Rohdaten (Kaggle, siehe 02_Daten-und-Modelle/02_Favorita_Mini-Projekt/README.md)
 02_Daten-und-Modelle/02_Favorita_Mini-Projekt/data/
 *.parquet
+
+# Erzeugte Modelle, Prognosen und Protokolle der MLOps-Pipeline (Tag 10)
+10_MLOPS/artefakte/

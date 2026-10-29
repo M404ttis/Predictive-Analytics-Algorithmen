@@ -633,6 +633,13 @@ Jeden Schritt **dokumentieren und versionieren** (Code, Mapping-Tabellen in Git)
 | Zielwert ist aus Spalten berechenbar (Rendite aus Miete und Preis) | diese Spalten nicht als Merkmale: Leakage |
 | Budget knapp, Angebot nur Lizenz | Gesamtkosten (TCO) rechnen, Proof of Concept zuerst |
 | Kleines IT-Team, Daten wachsen | gemanagte Cloud, Buy für Standard, Build nur für Kernwissen |
+| Zeitreihe aufteilen | zeitlich teilen (Test = letzte Monate), nie zufällig mischen |
+| Neues Modell soll automatisch live gehen | Tor davor: besser als einfache Vergleichsregel und unter Fehlerschwelle |
+| Validierung für Mehrmonatsprognose | über den ganzen Horizont prüfen (mit eigenen Prognosen), nicht nur Ein-Schritt |
+| Modell schwankt stark von Monat zu Monat | für den Betrieb ungeeignet, auch bei gutem Mittelwert |
+| Modell braucht 0,6 ms statt 0,02 ms | meist irrelevant, Seite lädt Sekunden; Engpass sind die Eingabedaten |
+| Mehrumsatz soll Modellwahl rechtfertigen | Marge und Mehraufwand gegenrechnen (Break-even), Umsatz ist kein Gewinn |
+| Mehrere gute Modelle, Unsicherheit | Champion in Betrieb, Challenger im A/B-Test mit Kontrollgruppe |
 
 ---
 
@@ -802,6 +809,9 @@ mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 | `08_Praxis-Use-Cases/MLPenguins2.py` und `.ipynb` | Pinguine mit seaborn, Funktion für alle seaborn-Datensätze, jupytext-Paar | Praxis, Notebook-Workflow |
 | `09_Plattformen/09_Loesung_Arbeitsauftrag0_1_2.md` | AA0: Mietrendite als Zielwert, Regression oder Klasse, Leakage. AA1: Lücken, Zielarchitektur (Mermaid). AA2: Toolentscheid mit Bewertungsmatrix | Plattformen, Leakage, Toolwahl |
 | `09_Plattformen/09_Loesung_Fallstudie_Schmidt.md` | Schmidt GmbH: Anforderungen, Datenfluss (Mermaid), Build/Buy, Cloud, Governance, Stufenplan, Reflexion | Plattformstrategie |
+| `10_MLOPS/10_Loesung_Arbeitsauftrag1.md` | Nachfrageprognose automatisieren: Trainingsschritte, Pipeline mit Tor (Mermaid), wo automatisieren, Tools (Airflow, MLflow), Durchspielen an Fluggastdaten, Vergleich mit Holt-Winters und SARIMA | MLOps, Pipeline, Zeitreihen |
+| `10_MLOPS/10_Loesung_Arbeitsauftrag2.md` | GrünKorb: drei Modelle für den Betrieb vergleichen (Stabilität, Echtzeit, Betriebskosten, Break-even), Champion und Challenger, Antworten an Marketing, Datenschutz, IT | Modellwahl für den Betrieb |
+| `10_MLOPS/10_Pipeline_Nachfrageprognose.py` und `10_Vergleich_Zeitreihenmodelle.py` | Pipeline-Skript mit kommentierten Schritten; Vergleich mit statsmodels (`pip install statsmodels`) | Praxis MLOps |
 
 ### 14.2 Glossar
 
