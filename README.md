@@ -26,6 +26,7 @@ Siehe [`05_Modellauswahl/05_README.md`](05_Modellauswahl/05_README.md): Schritt 
 | [`08_Praxis-Use-Cases`](08_Praxis-Use-Cases) | Fehlerkosten, Metrik und Schwelle je Use Case (Demand, Wartung, Churn, Betrug), Anti-Muster (Survivorship, Accuracy-Falle, fehlende Saison, Drift), Bias (ME) | `08_Loesung_Arbeitsauftrag1und2.md`, `MLPenguins2.py` und `.ipynb` (seaborn-Datensätze) |
 | [`09_Plattformen`](09_Plattformen) | Mietrendite als Zielwert (Leakage), Lücken in der Analytics-Landschaft, Zielarchitektur, Toolentscheid (Bewertungsmatrix), Fallstudie Schmidt (Build/Buy, Cloud, Governance) | `09_Loesung_Arbeitsauftrag0_1_2.md`, `09_Loesung_Fallstudie_Schmidt.md`, `0900_UE0_Arbeitsauftrag0_Daten.csv` |
 | [`10_MLOPS`](10_MLOPS) | Pipeline für eine Nachfrageprognose (Prüfen, Training, Tor, Ausrollen, Überwachen), Modellwahl für den Betrieb (Stabilität, Erklärbarkeit, Kosten) | `10_Loesung_Arbeitsauftrag1.md`, `10_Loesung_Arbeitsauftrag2.md`, `10_Pipeline_Nachfrageprognose.py`, `10_Vergleich_Zeitreihenmodelle.py` (braucht `statsmodels`) |
+| [`11_Modelltraining`](11_Modelltraining) | Data Leakage: vier verdächtige Stellen (Merkmale, Skalierung, gleicher Kunde), richtige Reihenfolge Aufteilen, Sauber, Trainieren | `11_Loesung_Zusatz_A11-1_Data_Leakage.md`, `11_Demo_Data_Leakage.py` |
 
 Die Dateien tragen die Nummer des Tages als Präfix (`04_...` gehört zu Tag 4).
 

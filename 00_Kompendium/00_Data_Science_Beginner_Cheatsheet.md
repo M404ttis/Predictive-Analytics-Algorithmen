@@ -81,10 +81,10 @@ The typical workflow:
 | **Variable** | Any column or quantity in the data. Features and target are both variables. |
 | **Parameter** | A value the model learns *during* training (weights, split points). |
 | **Hyperparameter** | A setting *you* choose *before* training (tree depth, learning rate, number of layers). |
-| **Train / test split** | Training data fits the model, test data is held back to judge it honestly. Also a validation set for tuning. |
+| **Train / test split** | Training data fits the model, test data is held back to judge it honestly. Also a validation set for tuning. See *Training and validation: key terms* in section 7. |
 | **Overfitting** | The model memorizes noise in the training data and does badly on new data. |
 | **Underfitting** | The model is too simple to capture the real pattern. |
-| **Data leakage** | Information from the test data or from the future sneaks into training, producing too-good results. |
+| **Data leakage** | Information from the test data or from the future sneaks into training, producing too-good results. Details and fixes in section 7. |
 | **Imbalanced classes** | One class is rare (e.g. 16 % leavers). Accuracy then misleads. |
 | **Outlier** | A value far from the rest. It can be an error or a real rare event. |
 | **Anomaly** | A rare observation that deviates from normal behaviour. Often what you are looking for. |
@@ -337,6 +337,154 @@ Supervised problems split into:
 3. Search hyperparameters (grid search, random search) using validation data only.
 4. Touch the test set **once**, at the very end.
 5. Watch the gap between training and validation performance: a big gap means overfitting.
+
+### Training and validation: key terms
+
+*(Worked through in `05_Modellauswahl/05_Notebookpreise_Modell.ipynb` and the day-10 pipeline in `10_MLOPS/`.)*
+
+| Term | Definition |
+|---|---|
+| **Hold-out** (train/test split, Hold-out-Verfahren) | Set a part of the data aside (typically 20 to 30 %) that is **never used for training or tuning**. After the model is chosen, test it **once** on this part to get an honest estimate of how it performs on new data. |
+| **Cross-validation** (Kreuzvalidierung, CV) | Split the training data into `k` parts (folds). Train `k` times, each time on `k − 1` folds, and validate on the remaining one. Every row is used for validation exactly once. Result: `k` scores, reported as **mean** (how good) and **spread** (how stable). |
+| **Stratification** (Stratifizierung) | A split that **keeps the class proportions** in every part. With 16 % leavers, each fold has about 16 % leavers, too. Without it, a small split can end up with few or no rare cases. |
+| **Data leakage** (Datenleck) | Information the model would **not have at prediction time** flows into training. The result looks too good and fails in operation. |
+| **Feature scaling** (Skalierung) | Bringing numeric features to comparable ranges. German "Skalierung" is "feature scaling" in English. Two common types: **standardization** and **normalization** (below). |
+| **Reinforcement learning** (bestärkendes Lernen, RL) | A third learning type next to supervised and unsupervised. An **agent** takes **actions** in an **environment**, gets a **reward**, and learns a **policy** that maximizes the total reward over time. There is no labelled correct answer per step. |
+| **Regularization** (Regularisierung) | A **penalty on model complexity** that is added to the training loss. It makes the model prefer simpler solutions and so fights overfitting. |
+| **Bias** (in the ML sense) | Error from a model that is **too simple or wrongly assumed**: it misses the real pattern in a systematic way (underfitting). |
+| **Variance** (in the ML sense) | How strongly the model **changes when the training data changes**. High variance means it fits noise of its particular training set (overfitting). |
+| **Early stopping** (frühes Stoppen) | Stop an iterative training process **as soon as the validation error no longer improves**, instead of running a fixed number of rounds. |
+| **Oversampling** | Make the rare class larger in the **training data** (copy rows or create synthetic ones). |
+| **Undersampling** | Make the common class smaller in the **training data** (remove rows). |
+
+#### Hold-out
+
+```python
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+```
+
+- `random_state` fixes the shuffle so the split is reproducible.
+- **Weakness:** one split depends on luck (maybe the test rows were easy or hard), and with little data the 20 % held back is missing for training.
+- **Three parts:** training (learn), validation (compare models, tune hyperparameters), test (final grade, once). Cross-validation replaces the fixed validation part.
+- After the test is done, you may refit the final model on **all** the data for use in production (the test only served to judge it).
+
+#### Cross-validation
+
+```python
+from sklearn.model_selection import cross_val_score, cross_validate, KFold
+cv = KFold(n_splits=5, shuffle=True, random_state=42)
+cross_val_score(model, X_train, y_train, cv=cv, scoring="neg_mean_absolute_error")      # one metric
+cross_validate(model, X_train, y_train, cv=cv, scoring=("neg_mean_absolute_error", "r2"))  # several metrics, times
+```
+
+- **Each run trains a fresh copy** of the model from scratch (`fit` happens inside the function), so your own `model` stays untrained. Fit the final model yourself afterwards.
+- **Cost:** `k` times the training time (5 models × 5 folds = 25 trainings).
+- sklearn returns errors **negative** ("greater is better"), so put a minus in front.
+- **Keep the test set outside:** run CV only on the training part. Otherwise the test rows have already influenced the model choice.
+- **Time series:** never shuffle. Use `TimeSeriesSplit` (always validate on the future).
+- `cross_val_score` is the short form for one metric, `cross_validate` returns a dictionary (`test_<metric>`, `fit_time`, ...). The "test" in these names means the validation fold, not the real test set.
+
+#### Stratification
+
+```python
+train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+from sklearn.model_selection import StratifiedKFold   # use as cv for classification
+```
+
+- Important for **imbalanced classes** (fraud 1 %, leavers 16 %).
+- For classification only (for a regression target you can stratify on bins of the target).
+- sklearn's `cross_val_score` already uses stratified folds for classifiers when you pass `cv=5`.
+
+#### Data leakage
+
+Two typical sources:
+
+| Source | Example | Fix |
+|---|---|---|
+| **Target leakage:** a feature contains the answer | Yield = annual rent / price. Rent and price **define** the target, so they must not be features. | Ask for every column: "Do I know this at prediction time, and can I compute the target from it?" |
+| **Train-test contamination:** test information used in preparation | Scaling or imputing on the full data **before** the split | Split first, fit scalers and imputers on training data only (use a `Pipeline`) |
+| **Future information** (time series) | A rolling average that includes days after the cutoff | Use only the past (`shift(1)`), split by time |
+
+Symptom: results that are too good to be true. The model then fails in production.
+
+#### Feature scaling
+
+| Method | Formula | Result | Note |
+|---|---|---|---|
+| **Standardization** (z-score) | `z = (x − mean) / std` | mean 0, std 1 | The usual default. `StandardScaler`. Two steps: shift the data so the mean is 0, then rescale so the standard deviation is 1. The **shape** of the distribution stays the same (skew and outliers remain). `std` = standard deviation, see section 4. |
+| **Normalization** (min-max) | `x' = (x − min) / (max − min)` | range 0 to 1 | Sensitive to outliers. `MinMaxScaler` |
+| **Robust scaling** | `(x − median) / IQR` | outliers matter less | `RobustScaler` |
+
+- **Needed** for models based on distances or gradients and for regularized models: k-nearest neighbours, k-means, SVM, neural networks, ridge/lasso. **Not needed** for trees and forests.
+- Fit the scaler on the **training data only**, then apply it to test data (in a `Pipeline`).
+- Scaling does not change a linear model's accuracy, but makes coefficients comparable.
+
+#### Reinforcement learning
+
+| Part | Meaning | Example: chess program |
+|---|---|---|
+| **Agent** | The learner that decides | The program |
+| **Environment** | What it acts in | The board and opponent |
+| **State** | Current situation | Piece positions |
+| **Action** | A possible decision | A move |
+| **Reward** | Feedback number, often delayed | +1 win, −1 loss at the end |
+| **Policy** | The learned rule "state → action" | What to play in which position |
+
+- **Difference from supervised learning:** no correct label per step, only a reward, often much later. The agent must **explore** (try new things) and **exploit** (use what works).
+- **Examples:** game agents, robot control, dynamic pricing, recommendation, tuning of language models with human feedback.
+- **Weaknesses:** needs very many trials, a simulator or a safe environment, and a carefully designed reward (an agent will exploit loopholes in it, see Goodhart's law in section 6).
+
+#### Regularization
+
+- **L2 (Ridge):** penalizes the sum of squared weights; shrinks all weights toward 0.
+- **L1 (Lasso):** penalizes the sum of absolute weights; sets some weights **exactly to 0** (acts as feature selection).
+- **Strength is a hyperparameter:** `alpha` in `Ridge`/`Lasso` (larger = stronger), `C` in `LogisticRegression` (inverse: smaller C = stronger).
+- **Other forms:** limit tree depth (`max_depth`, `min_samples_leaf`), **dropout** and **weight decay** in neural networks, early stopping.
+- Scale features first, otherwise the penalty hits large-scale features unfairly.
+- Effect: **more bias, less variance** (see below).
+
+#### Bias and variance
+
+| | High bias | High variance |
+|---|---|---|
+| Problem | Underfitting: too simple | Overfitting: too flexible |
+| Error on training data | high | low |
+| Error on validation data | high (similar to training) | much higher than training |
+| Example | Straight line through a curved pattern | Decision tree of depth 12 |
+| Remedy | More flexible model, better features | More data, simpler model, regularization, averaging (random forest) |
+
+- **Trade-off:** more model flexibility lowers bias but raises variance. The goal is the sweet spot with the lowest error on **unseen** data. Rough decomposition: expected error = bias² + variance + irreducible noise.
+- **The word "bias" has several meanings** in this cheatsheet. Do not mix them up:
+  - **Model bias** (here): systematic error from an over-simple model.
+  - **Mean Error / bias of a forecast** (section 8): average signed error, shows if a forecast is too high or too low.
+  - **Bias as unfairness** (section 12): a model that disadvantages groups.
+  - **Statistical biases** (section 6): survivorship bias, selection bias, anchoring and similar.
+- **Variance** here means "sensitivity to the training data", not the statistical variance of a column (section 4).
+
+#### Early stopping
+
+- Training runs in rounds (epochs in a neural network, trees in boosting). Training error keeps falling, **validation error** falls and then rises again once the model starts to memorize.
+- Rule: stop when validation error has not improved for `patience` rounds, and keep the best round.
+- sklearn: `GradientBoostingRegressor(n_iter_no_change=10, validation_fraction=0.1)`, `MLPClassifier(early_stopping=True)`. XGBoost/LightGBM: `early_stopping_rounds`.
+- Needs its **own validation set**, separate from the test set, otherwise the test set is used for tuning.
+
+#### Oversampling and undersampling
+
+For imbalanced classes (accuracy then misleads, see section 8).
+
+| | Oversampling | Undersampling |
+|---|---|---|
+| Idea | More rare-class rows | Fewer common-class rows |
+| Methods | Random duplication; **SMOTE** (creates synthetic rows between neighbouring rare cases) | Random removal; Tomek links (remove borderline rows) |
+| Pro | No information lost | Fast, smaller data |
+| Con | Duplicates can cause overfitting | Throws away information |
+| Package | `imbalanced-learn` (not installed in the course venv by default) | same |
+
+- **Only on the training data, after the split.** If you resample before splitting, copies of the same row land in both training and test: that is data leakage and inflates the scores. Inside cross-validation use the `imblearn` pipeline so that resampling happens per fold.
+- **The test set keeps its real class proportions.** It must reflect reality.
+- Resampling distorts predicted probabilities (the model thinks the rare class is more common than it is). Choose the decision threshold on unchanged validation data.
+- **Alternatives:** `class_weight="balanced"` (rare errors count more, no data changed), lowering the decision threshold, and metrics that suit rare classes (recall, precision, PR-AUC).
 
 ### Explainability
 

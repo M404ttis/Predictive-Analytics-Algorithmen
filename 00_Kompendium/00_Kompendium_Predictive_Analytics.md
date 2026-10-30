@@ -640,6 +640,10 @@ Jeden Schritt **dokumentieren und versionieren** (Code, Mapping-Tabellen in Git)
 | Modell braucht 0,6 ms statt 0,02 ms | meist irrelevant, Seite lädt Sekunden; Engpass sind die Eingabedaten |
 | Mehrumsatz soll Modellwahl rechtfertigen | Marge und Mehraufwand gegenrechnen (Break-even), Umsatz ist kein Gewinn |
 | Mehrere gute Modelle, Unsicherheit | Champion in Betrieb, Challenger im A/B-Test mit Kontrollgruppe |
+| Ergebnis auffällig gut (98 % bei 78 % Messlatte) | zuerst Leakage suchen: Merkmalswichtigkeit, Weglassen-Test, späterer Zeitraum |
+| Mehrere Zeilen je Kunde | nach Kunden-ID teilen (`GroupShuffleSplit`, `GroupKFold`), nie zeilenweise mischen |
+| Schritt nutzt die Zielspalte (Merkmalsauswahl, Target Encoding, Oversampling) | nur auf dem Training anpassen, in einer `Pipeline` |
+| Alles, was aus Daten lernt (Skalierer, Imputer, Modell) | `fit` nur auf Training, `transform` auf Training und Test |
 
 ---
 
@@ -812,6 +816,7 @@ mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 | `10_MLOPS/10_Loesung_Arbeitsauftrag1.md` | Nachfrageprognose automatisieren: Trainingsschritte, Pipeline mit Tor (Mermaid), wo automatisieren, Tools (Airflow, MLflow), Durchspielen an Fluggastdaten, Vergleich mit Holt-Winters und SARIMA | MLOps, Pipeline, Zeitreihen |
 | `10_MLOPS/10_Loesung_Arbeitsauftrag2.md` | GrünKorb: drei Modelle für den Betrieb vergleichen (Stabilität, Echtzeit, Betriebskosten, Break-even), Champion und Challenger, Antworten an Marketing, Datenschutz, IT | Modellwahl für den Betrieb |
 | `10_MLOPS/10_Pipeline_Nachfrageprognose.py` und `10_Vergleich_Zeitreihenmodelle.py` | Pipeline-Skript mit kommentierten Schritten; Vergleich mit statsmodels (`pip install statsmodels`) | Praxis MLOps |
+| `11_Modelltraining/11_Loesung_Zusatz_A11-1_Data_Leakage.md` | Data Leakage prüfen (Merkmale, Skalierung vor dem Split, gleicher Kunde), Reihenfolge Aufteilen, Sauber, Trainieren, woran man 98 % als zu gut erkennt; Simulation `11_Demo_Data_Leakage.py` | Data Leakage, Aufteilung |
 
 ### 14.2 Glossar
 
