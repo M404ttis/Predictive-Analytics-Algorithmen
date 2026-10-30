@@ -178,23 +178,26 @@ plt.show()
 # mit den Übungsaufgaben: Auswendiglernen (Overfitting) würde belohnt. Also hält man Daten zum **Testen** zurück.
 # Mit nur **einer** Aufteilung hängt das Ergebnis aber vom Zufall ab: Vielleicht waren die Testzeilen zufällig leicht oder schwer.
 #
-# **Lösung:** Man teilt die 500 Zeilen zufällig in **5 gleich große Teile** („Folds") zu je 100 Zeilen und prüft **fünfmal**.
-# Jedes Mal ist ein anderer Teil der Test-Teil, die anderen vier (400 Zeilen) sind der Lern-Teil:
+# **Zwei Stufen:** Zuerst legen wir **20 % der Zeilen (100)** als **echten Test** beiseite. Sie bleiben bis Abschnitt 4 tabu, damit die
+# Endnote ehrlich ist. Die übrigen **400 Zeilen** dienen zum Lernen und zum Vergleichen der Modelle.
+#
+# **Lösung für den Vergleich:** Man teilt diese 400 Zeilen zufällig in **5 gleich große Teile** („Folds") zu je 80 Zeilen und prüft **fünfmal**.
+# Jedes Mal ist ein anderer Teil der **Prüf-Teil** („Validierung"), die anderen vier (320 Zeilen) sind der Lern-Teil:
 #
 # ```text
-# Durchlauf 1:  [ TEST ][ lernen ][ lernen ][ lernen ][ lernen ]   -> Fehler 1
-# Durchlauf 2:  [ lernen ][ TEST ][ lernen ][ lernen ][ lernen ]   -> Fehler 2
-# Durchlauf 3:  [ lernen ][ lernen ][ TEST ][ lernen ][ lernen ]   -> Fehler 3
-# Durchlauf 4:  [ lernen ][ lernen ][ lernen ][ TEST ][ lernen ]   -> Fehler 4
-# Durchlauf 5:  [ lernen ][ lernen ][ lernen ][ lernen ][ TEST ]   -> Fehler 5
+# Durchlauf 1:  [ PRÜFEN ][ lernen ][ lernen ][ lernen ][ lernen ]   -> Fehler 1
+# Durchlauf 2:  [ lernen ][ PRÜFEN ][ lernen ][ lernen ][ lernen ]   -> Fehler 2
+# Durchlauf 3:  [ lernen ][ lernen ][ PRÜFEN ][ lernen ][ lernen ]   -> Fehler 3
+# Durchlauf 4:  [ lernen ][ lernen ][ lernen ][ PRÜFEN ][ lernen ]   -> Fehler 4
+# Durchlauf 5:  [ lernen ][ lernen ][ lernen ][ lernen ][ PRÜFEN ]   -> Fehler 5
 # ```
 #
-# Das Modell wird in jedem Durchlauf **neu und von null** trainiert und nur auf den 100 **ungesehenen** Zeilen geprüft.
+# Das Modell wird in jedem Durchlauf **neu und von null** trainiert und nur auf den 80 **ungesehenen** Zeilen geprüft.
 # Am Ende gibt es fünf Fehlerwerte. Daraus werden zwei Zahlen:
 # - **Mittelwert** der fünf Fehler → wie gut ist das Modell typischerweise? (Spalte `MAE (EUR)`, `R2`)
 # - **Streuung** der fünf Fehler → wie stabil ist es? Eine kleine Streuung heißt: egal welche Daten, ähnlich gutes Ergebnis. (Spalte `Streuung MAE`)
 #
-# **Ja, jedes der fünf Modelle wird so getestet**, jeweils mit den **gleichen fünf Aufteilungen** (`random_state=42` legt den Zufall fest).
+# **Ja, jedes der fünf Modelle wird so geprüft**, jeweils mit den **gleichen fünf Aufteilungen** (`random_state=42` legt den Zufall fest).
 # Insgesamt entstehen 5 Modelle × 5 Durchläufe = **25 Trainings**. Das Modell, das wir später für die Preisempfehlung nutzen, ist ein
 # **eigenes, danach trainiertes** (siehe Abschnitt 4), die Kreuzvalidierung dient nur dem **Vergleich**.
 #
@@ -204,6 +207,10 @@ plt.show()
 
 # %%
 X, y = df[MERKMALE], df[ZIEL]
+
+# ERST den Test abtrennen (20 % = 100 Zeilen) und bis zum Abschnitt 4 nicht mehr anfassen.
+# Alles, was wir bis dahin entscheiden (Modellwahl, Baumtiefe), geschieht nur mit den 400 Lern-Zeilen.
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Alle Kandidaten in einem Dictionary: Name -> Modellobjekt. Weitere Modelle ergänzt man einfach als neue Zeile.
 modelle = {
@@ -239,9 +246,10 @@ cv = KFold(n_splits=5, shuffle=True, random_state=42)
 
 zeilen = []
 for name, modell in modelle.items():
-    # cross_validate trainiert das Modell 5x neu (je 400 Zeilen) und prüft 5x auf den restlichen 100 Zeilen.
+    # cross_validate trainiert das Modell 5x neu (je 320 Zeilen) und prüft 5x auf den restlichen 80 Zeilen.
+    # Es sieht nur die 400 Lern-Zeilen (X_train), die 100 Test-Zeilen bleiben unberührt.
     # Ergebnis: je Kennzahl eine Liste mit 5 Werten, einer pro Durchlauf.
-    s = cross_validate(modell, X, y, cv=cv, scoring=("neg_mean_absolute_error", "r2"))
+    s = cross_validate(modell, X_train, y_train, cv=cv, scoring=("neg_mean_absolute_error", "r2"))
     zeilen.append({
         "Modell": name,
         # sklearn liefert den Fehler negativ (größer = besser), daher das Minus davor
@@ -253,7 +261,7 @@ vergleich = pd.DataFrame(zeilen)
 print(vergleich.round(2).to_string(index=False))
 
 # %% [markdown]
-# <div style="background:#e0f2f1;border-left:6px solid #009688;color:#004d40;padding:10px 14px;border-radius:4px"><b>Takeaway:</b> <b>Die einfache lineare Regression gewinnt:</b> Fehler 33 € gegen 37 € (Boosting), 40 € (Random Forest), 58 € (Baum) und 267 € (Baseline). Komplexer heißt hier nicht besser.</div>
+# <div style="background:#e0f2f1;border-left:6px solid #009688;color:#004d40;padding:10px 14px;border-radius:4px"><b>Takeaway:</b> <b>Die einfache lineare Regression gewinnt:</b> Fehler 33 € gegen 36 € (Boosting), 38 € (Random Forest), 59 € (Baum) und 266 € (Baseline). Komplexer heißt hier nicht besser.</div>
 
 # %% [markdown]
 # ### Plot 5 · Fehler der Modelle im Vergleich
@@ -270,13 +278,13 @@ plt.tight_layout()
 plt.show()
 
 # %% [markdown]
-# <div style="background:#e0f2f1;border-left:6px solid #009688;color:#004d40;padding:10px 14px;border-radius:4px"><b>Takeaway:</b> Die lineare Regression hat den kleinsten Balken und mit 1 € auch die kleinste Streuung zwischen den fünf Durchläufen. Sie ist das genaueste <b>und</b> das stabilste Modell.</div>
+# <div style="background:#e0f2f1;border-left:6px solid #009688;color:#004d40;padding:10px 14px;border-radius:4px"><b>Takeaway:</b> Die lineare Regression hat den kleinsten Balken. Die Streuung zwischen den fünf Durchläufen ist mit etwa 2 € klein, am stabilsten ist der Random Forest (etwa 1 €). Die lineare Regression ist also das genaueste Modell und gehört bei der Stabilität zu den guten.</div>
 
 # %% [markdown]
-# ## 4 · Lineare Regression deuten (Hold-out 80/20)
+# ## 4 · Lineare Regression deuten und erster Blick auf den Test (Hold-out 80/20)
 
 # %%
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Der Test wurde schon in Abschnitt 3 abgetrennt (X_test, y_test), hier wird er zum ersten Mal benutzt.
 linear = LinearRegression().fit(X_train, y_train)
 vorhersage = linear.predict(X_test)
 print(f"Achsenabschnitt: {linear.intercept_:,.1f} EUR")
@@ -367,7 +375,7 @@ for k in knoten:
 # %%
 tiefen = range(1, 13)
 fehler_lernen, fehler_test = validation_curve(
-    DecisionTreeRegressor(random_state=42), X, y, param_name="max_depth", param_range=tiefen,
+    DecisionTreeRegressor(random_state=42), X_train, y_train, param_name="max_depth", param_range=tiefen,
     cv=cv, scoring="neg_mean_absolute_error")
 kurve = pd.DataFrame({"Tiefe": list(tiefen),
                       "Lern-Daten": -fehler_lernen.mean(axis=1),
@@ -383,7 +391,7 @@ ax.legend()
 plt.show()
 
 # %% [markdown]
-# <div style="background:#e0f2f1;border-left:6px solid #009688;color:#004d40;padding:10px 14px;border-radius:4px"><b>Takeaway:</b> Der Fehler auf den Lern-Daten sinkt mit jeder Frage gegen null, der auf <b>ungesehenen</b> Daten nicht: Er ist bei Tiefe 7 am kleinsten (etwa 46 €) und steigt danach leicht auf etwa 49 €, während der Lernfehler gegen 1 € fällt: Das ist <b>Overfitting</b>. Selbst der beste Baum bleibt schlechter als die lineare Regression (33 €). Die Tiefe 4 aus dem Modellvergleich (58 €) war also nicht die beste Baumtiefe, aber ein lesbarer Kompromiss.</div>
+# <div style="background:#e0f2f1;border-left:6px solid #009688;color:#004d40;padding:10px 14px;border-radius:4px"><b>Takeaway:</b> Der Fehler auf den Lern-Daten sinkt mit jeder Frage gegen null, der auf <b>ungesehenen</b> Daten nicht: Er ist bei Tiefe 6 und 7 am kleinsten (etwa 46 €) und steigt danach leicht auf etwa 50 €, während der Lernfehler gegen 1 € fällt: Das ist <b>Overfitting</b>. Selbst der beste Baum bleibt schlechter als die lineare Regression (33 €). Die Tiefe 4 aus dem Modellvergleich (58 €) war also nicht die beste Baumtiefe, aber ein lesbarer Kompromiss.</div>
 
 # %% [markdown]
 # **Und Random Forest und Gradient Boosting?** Sie bestehen aus **200 bzw. 100 Bäumen**, die zusammen entscheiden. Das lässt sich nicht
@@ -444,7 +452,10 @@ plt.show()
 # %%
 neu = pd.DataFrame([{"Display_Zoll": 15, "Akku_Wh": 65, "RAM_GB": 16, "SSD_GB": 512, "Gewicht_g": 1400}])
 print(neu.to_string(index=False))
-print(f"empfohlener Preis: {linear.predict(neu)[0]:,.0f} EUR")
+# Der Test ist abgeschlossen, die Modellwahl steht. Für den Einsatz trainieren wir das Modell jetzt noch einmal auf ALLEN 500 Zeilen,
+# damit keine Daten ungenutzt bleiben. Die Testnote aus Abschnitt 4 gilt für die Vorversion (400 Zeilen), sie ändert sich kaum.
+final = LinearRegression().fit(X, y)
+print(f"empfohlener Preis: {final.predict(neu)[0]:,.0f} EUR")
 
 # %% [markdown]
-# <div style="background:#e0f2f1;border-left:6px solid #009688;color:#004d40;padding:10px 14px;border-radius:4px"><b>Takeaway:</b> Empfehlung <b>969 €</b> vom linearen Modell (trainiert auf 400 Zeilen). Das ist ein <b>Vorschlag</b>: Der Vertrieb entscheidet, und das Gerät muss im bekannten Wertebereich liegen (RAM 8 bis 64 GB, SSD 256 bis 2048 GB).</div>
+# <div style="background:#e0f2f1;border-left:6px solid #009688;color:#004d40;padding:10px 14px;border-radius:4px"><b>Takeaway:</b> Empfehlung <b>970 €</b> vom linearen Modell (nach dem Test auf allen 500 Zeilen neu trainiert). Das ist ein <b>Vorschlag</b>: Der Vertrieb entscheidet, und das Gerät muss im bekannten Wertebereich liegen (RAM 8 bis 64 GB, SSD 256 bis 2048 GB).</div>
