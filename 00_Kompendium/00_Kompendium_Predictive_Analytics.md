@@ -644,6 +644,11 @@ Jeden Schritt **dokumentieren und versionieren** (Code, Mapping-Tabellen in Git)
 | Mehrere Zeilen je Kunde | nach Kunden-ID teilen (`GroupShuffleSplit`, `GroupKFold`), nie zeilenweise mischen |
 | Schritt nutzt die Zielspalte (Merkmalsauswahl, Target Encoding, Oversampling) | nur auf dem Training anpassen, in einer `Pipeline` |
 | Alles, was aus Daten lernt (Skalierer, Imputer, Modell) | `fit` nur auf Training, `transform` auf Training und Test |
+| Anzahl Folds bei saisonalen Daten | ein Fold je Jahr (k = 3), jeder Fold enthält alle Jahreszeiten; Mittelwert stabil, Streuung ist der Befund |
+| Ein Fold viel schlechter als die anderen | einzelne Ausreißerwoche (z. B. Messe) prüfen, der MSE quadriert die Fehler |
+| Grid Search planen | Kombinationen = Produkt der Werte, Läufe = Kombinationen × k, Zeit = Läufe × Dauer je Lauf vorher nachrechnen |
+| Baummodell soll lineares Modell schlagen | erst Baseline schlagen, dann tunen; Bäume setzen einen Trend nicht fort |
+| Bester CV-Score einer Suche als Gütezahl | zu optimistisch, ehrlich nur mit Testset oder Nested CV |
 
 ---
 
@@ -817,6 +822,7 @@ mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 | `10_MLOPS/10_Loesung_Arbeitsauftrag2.md` | GrünKorb: drei Modelle für den Betrieb vergleichen (Stabilität, Echtzeit, Betriebskosten, Break-even), Champion und Challenger, Antworten an Marketing, Datenschutz, IT | Modellwahl für den Betrieb |
 | `10_MLOPS/10_Pipeline_Nachfrageprognose.py` und `10_Vergleich_Zeitreihenmodelle.py` | Pipeline-Skript mit kommentierten Schritten; Vergleich mit statsmodels (`pip install statsmodels`) | Praxis MLOps |
 | `11_Modelltraining/11_Loesung_Zusatz_A11-1_Data_Leakage.md` | Data Leakage prüfen (Merkmale, Skalierung vor dem Split, gleicher Kunde), Reihenfolge Aufteilen, Sauber, Trainieren, woran man 98 % als zu gut erkennt; Simulation `11_Demo_Data_Leakage.py` | Data Leakage, Aufteilung |
+| `12_Modelloptimierung/12_Loesung_Arbeitsauftrag1und2.md` | k-Fold mit Jahres-Folds, Fold-Unterschiede erklärt (Messe), Grid Search mit Rechenzeitbudget, Random Forest gegen lineare Regression; `12_Demo_CV_und_Grid.py` | Kreuzvalidierung, Tuning |
 
 ### 14.2 Glossar
 
