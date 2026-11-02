@@ -500,6 +500,77 @@ For imbalanced classes (accuracy then misleads, see section 8).
 - Resampling distorts predicted probabilities (the model thinks the rare class is more common than it is). Choose the decision threshold on unchanged validation data.
 - **Alternatives:** `class_weight="balanced"` (rare errors count more, no data changed), lowering the decision threshold, and metrics that suit rare classes (recall, precision, PR-AUC).
 
+### Hyperparameter search: grid, random, Bayesian
+
+*(Grid search worked through on day 12, `12_Modelloptimierung/12_Loesung_Arbeitsauftrag1und2.md`.)*
+
+Hyperparameters (tree depth, learning rate, ...) are not learned, you must search for good values. Every candidate is judged by cross-validation, so **cost = number of candidates × k folds × time per training**.
+
+| Method | How it picks the next candidate | Pro | Con |
+|---|---|---|---|
+| **Grid search** (`GridSearchCV`) | Tries **all combinations** of the values you list | Complete, easy to explain | Cost multiplies: 3 × 4 × 3 values = 36 candidates. Wastes runs on hopeless regions. |
+| **Random search** (`RandomizedSearchCV`) | Draws **random combinations** from ranges or lists, fixed budget (`n_iter`) | Fixed cost; often nearly as good as the grid, because usually only one or two hyperparameters really matter | Might miss the sharp optimum |
+| **Bayesian optimization** | **Learns from the previous results** where to look next (below) | Few runs for expensive models | Sequential, needs an extra package, more complex |
+
+#### Bayesian optimization
+
+**Idea:** grid and random search ignore what they have already seen. Bayesian optimization keeps a **score table** of every candidate tried so far and uses it to choose the next candidate **intelligently**. Like looking for the best restaurant in a city: after a few visits you search near the good ones, but you still try an unknown street now and then.
+
+The loop:
+
+1. Try a few random candidates and measure their cross-validation score.
+2. Fit a cheap **surrogate model** (often a Gaussian process, or a tree-based model such as TPE) that predicts for any untried setting: *expected score* and *how uncertain* that guess is.
+3. An **acquisition function** picks the next candidate. It balances two things:
+   - **Exploit:** places where the predicted score is good.
+   - **Explore:** places where the model is very unsure and might hide something better.
+4. Train and score that candidate with CV (the expensive step), add the result to the table, go back to step 2. Stop after the budget (e.g. 30 runs).
+
+```
+Grid search:      all 100 combinations        → 100 expensive trainings
+Bayesian:         10 random + 20 guided       →  30 expensive trainings, often as good a result
+```
+
+- **When it pays off:** one training is slow (minutes to hours: deep learning, big boosting models) and there are several hyperparameters. With a 20-second training and 36 candidates (day 12) a grid is fine.
+- **Tools:** **Optuna** (very common, TPE by default), `scikit-optimize` (`BayesSearchCV`, drop-in for `GridSearchCV`), Hyperopt. None of them is installed in the course venv. sklearn itself has no Bayesian search; it offers `HalvingGridSearchCV` (drops weak candidates early) as another way to save time.
+- **Limits:** the steps depend on each other, so it cannot run all candidates in parallel as easily as a grid. It still needs a clean validation setup: a lucky candidate can fool it, see nested cross-validation below.
+- **Not related:** "Bayesian" here has nothing to do with the Naive Bayes classifier. It refers to updating beliefs about the score from new evidence.
+
+#### Nested cross-validation
+
+**Problem:** when you pick the **best** of many candidates by their CV score, that best score is **too optimistic** (winner's curse, section 4). The winner was partly chosen because it got lucky on these particular folds. The more candidates, the stronger the effect. So the best CV score of a grid search is **not** an honest estimate of how the tuned model performs on new data.
+
+**Idea:** two loops that must not touch each other.
+
+- **Inner loop:** inside one training part, CV chooses the best hyperparameters (the actual grid search).
+- **Outer loop:** an independent CV that **only measures** how good "the whole procedure including the tuning" is. Each outer test fold is never seen by the inner search of that round.
+
+```
+Outer fold 1:  [ test ]  [ train A | train B | train C ]
+                          └── inner CV: tune on A/B/C, pick the best settings
+               → refit with these settings on all of train, score on [ test ]
+Outer fold 2:  next test fold, the inner search starts again from scratch
+...
+Result: k outer scores = honest estimate for "tune + train"
+```
+
+```python
+from sklearn.model_selection import GridSearchCV, KFold, cross_val_score
+inner = KFold(3, shuffle=True, random_state=1)    # chooses hyperparameters
+outer = KFold(5, shuffle=True, random_state=2)    # judges the whole procedure
+search = GridSearchCV(model, param_grid, cv=inner, scoring="neg_mean_squared_error")
+scores = cross_val_score(search, X, y, cv=outer, scoring="neg_mean_squared_error")   # GridSearchCV is the "model"
+print(-scores.mean(), -scores.std())
+```
+
+- **Cost:** `outer k × inner k × candidates` trainings, e.g. 5 × 3 × 36 = 540 trainings instead of 108. Use it to **compare methods**, not on every run.
+- **What it answers:** "how good is the *procedure* (this model type, tuned this way)?" It does **not** produce one final model. Afterwards run a normal grid search on all training data, refit, and use that.
+- **The trainings are for measuring only.** Every inner and outer run really trains a model, but none of these models is kept or deployed: each saw only part of the data and may have chosen different settings. They are measuring instruments. The final model is trained separately, and the nested score is the quality you report for it.
+- **Versus a hold-out test set:** a separate test set (touched once) gives the same honesty at much lower cost. Nested CV is the better choice when **data is scarce** and cannot spare a 20 % test set, or when you want to **compare several tuned models fairly**.
+- **Time series:** use `TimeSeriesSplit` for both loops (never shuffle).
+- **Size of the effect:** big with many candidates and little data, small otherwise. In our Bohnenwerk data (156 rows, 24 candidates) the plain grid score was 2.89 million (MSE), the nested score 2.51 million. The difference points the "wrong" way here, which shows that with so few rows the **fold-to-fold noise is larger than the optimism**. Do not expect nested CV to always give a worse number; it gives a **trustworthy** one.
+
+**Summary in one line:** grid, random or Bayesian search find good settings; nested cross-validation tells you honestly how good the result of that search is.
+
 ### Explainability
 
 - **Feature importance:** which inputs the model relies on overall.
