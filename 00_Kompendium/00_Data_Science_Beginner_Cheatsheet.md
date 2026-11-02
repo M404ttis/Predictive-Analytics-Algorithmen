@@ -396,6 +396,20 @@ from sklearn.model_selection import StratifiedKFold   # use as cv for classifica
 - For classification only (for a regression target you can stratify on bins of the target).
 - sklearn's `cross_val_score` already uses stratified folds for classifiers when you pass `cv=5`.
 
+**Stratification keeps the imbalance, it does not remove it.** Every part still has 1 % fraud. To make the model *learn* from the rare class, you have to treat the imbalance itself. The strategies:
+
+| Strategy | What it does | Name of the idea |
+|---|---|---|
+| Remove common-class rows (e.g. keep only 10 % of the non-fraud) | Shrinks the majority class | **Undersampling** |
+| Copy rare-class rows or create synthetic ones (e.g. SMOTE) | Enlarges the minority class | **Oversampling** |
+| Do both: moderate oversampling plus moderate undersampling | Meets in the middle | **Combined resampling** (e.g. SMOTE + Tomek links, SMOTEENN) |
+| Make rare-class errors count more, data unchanged | `class_weight="balanced"` | **Class weighting** (cost-sensitive learning) |
+| Move the decision threshold, e.g. flag at `p > 0.1` instead of `0.5` | Changes the decision, not the model | **Threshold tuning** |
+
+- **Order of steps:** (1) stratified split, (2) resample **the training part only**, (3) test on the untouched test part with its real proportions. See *Oversampling and undersampling* below for details and the leakage trap.
+- **Which first?** Try `class_weight` and threshold tuning first (nothing is thrown away, nothing is invented). Use resampling when the model still ignores the rare class.
+- **Judge with** recall, precision, F1 or PR-AUC, not accuracy (section 8).
+
 #### Data leakage
 
 Two typical sources:
