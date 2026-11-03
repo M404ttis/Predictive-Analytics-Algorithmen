@@ -649,6 +649,14 @@ Jeden Schritt **dokumentieren und versionieren** (Code, Mapping-Tabellen in Git)
 | Grid Search planen | Kombinationen = Produkt der Werte, Läufe = Kombinationen × k, Zeit = Läufe × Dauer je Lauf vorher nachrechnen |
 | Baummodell soll lineares Modell schlagen | erst Baseline schlagen, dann tunen; Bäume setzen einen Trend nicht fort |
 | Bester CV-Score einer Suche als Gütezahl | zu optimistisch, ehrlich nur mit Testset oder Nested CV |
+| Welche Ereignisse müssen in Echtzeit fließen? | nur die, bei denen eine späte Antwort Geld kostet (Bestand, Betrugsprüfung); Auswertung und Lernen im Nachtlauf |
+| Ergebnis kommt erst Wochen später (Rückbuchung) | Label mit Reifefenster nutzen, nie als Merkmal in der Echtzeitprüfung |
+| Ereignisse während eines Neustarts | persistentes Log (Kafka) plus idempotente Verarbeitung, nichts verlieren, nichts doppelt zählen |
+| Speed- und Batch-Ergebnis widersprechen sich | der Batch gewinnt (Lambda), der Speed-Layer ist vorläufig |
+| Score zwischen Auto-Freigabe und Auto-Block | Hold und Mensch prüft; Schwellen nach Fehlerkosten und Warenwert, Score vorher kalibrieren |
+| Lastspitze im Stream | skalieren (Partitionen/Tasks), nie die Betrugsprüfung samplen, Bestand darf zuerst langsamer werden |
+| Stream fällt aus (Consumer-Lag) | abgestuft: Regeln ohne Zustand, Kleinbeträge offen, höhere Beträge zurückhalten (Hold) |
+| KI erstellt Inhalte nach außen | Prüfstufe nach Reichweite, Schaden, Faktenbezug, Umkehrbarkeit; Zahlen und Preise aus Daten, nie von der KI |
 
 ---
 
@@ -823,6 +831,12 @@ mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 | `10_MLOPS/10_Pipeline_Nachfrageprognose.py` und `10_Vergleich_Zeitreihenmodelle.py` | Pipeline-Skript mit kommentierten Schritten; Vergleich mit statsmodels (`pip install statsmodels`) | Praxis MLOps |
 | `11_Modelltraining/11_Loesung_Zusatz_A11-1_Data_Leakage.md` | Data Leakage prüfen (Merkmale, Skalierung vor dem Split, gleicher Kunde), Reihenfolge Aufteilen, Sauber, Trainieren, woran man 98 % als zu gut erkennt; Simulation `11_Demo_Data_Leakage.py` | Data Leakage, Aufteilung |
 | `12_Modelloptimierung/12_Loesung_Arbeitsauftrag1und2.md` | k-Fold mit Jahres-Folds, Fold-Unterschiede erklärt (Messe), Grid Search mit Rechenzeitbudget, Random Forest gegen lineare Regression; `12_Demo_CV_und_Grid.py` | Kreuzvalidierung, Tuning |
+| `12_Modelloptimierung/12_Loesung_Zusatz_A12-2_Bias_Varianz.md` | vier Modelle nach Train/Test-Abstand einordnen (Underfit, gut, Overfit), Modellwahl, Entscheidungsbaum-Beispiel | Bias und Varianz |
+| `12_Modelloptimierung/12_Loesung_Fallstudie_RetailSmart.md` und `12_Demo_Fallstudie_RetailSmart.py` | Validierungsübersicht, Zufallssuche mit passender Metrik, Schwelle wählen, Overfitting-Strategie bei 5 % seltenen Ereignissen; Simulation | Tuning bei Ungleichgewicht |
+| `13_Realtime/13_Loesung_Arbeitsauftrag1_Seilschaft.md` | Ereignisse in Echtzeit ja/nein, Datenfluss (Mermaid), Werkzeuge, System oder Mensch; Größenvergleich zeigt: kleine Lösung genügt | Echtzeit, Bestand, Prüfung |
+| `13_Realtime/13_Loesung_Fallstudie_QuickRetail.md` | Realtime-Architektur, Entscheidungshierarchie, vier Situationen (viraler Artikel, Grenzfall-Score, Lastspitze, Ausfall) | Stream-Architektur |
+| `13_Realtime/13_Loesung_Zusaetze_A13-1_A13-3_A13-4.md` | Lambda, Automatik oder Mensch mit Eskalationspfad, KI-Werkzeuge mit Prüfstufen, Kaufen oder Bauen | Lambda, KI im Betrieb |
+| `13_Realtime/13_Demo_Realtime_Rechnungen.py` | Rechnungen zu Datenrate, Fehlerkosten-Schwellen, Prüfkapazität, Aufholzeit | Rechenbeispiele |
 
 ### 14.2 Glossar
 

@@ -28,6 +28,7 @@ Siehe [`05_Modellauswahl/05_README.md`](05_Modellauswahl/05_README.md): Schritt 
 | [`10_MLOPS`](10_MLOPS) | Pipeline für eine Nachfrageprognose (Prüfen, Training, Tor, Ausrollen, Überwachen), Modellwahl für den Betrieb (Stabilität, Erklärbarkeit, Kosten) | `10_Loesung_Arbeitsauftrag1.md`, `10_Loesung_Arbeitsauftrag2.md`, `10_Pipeline_Nachfrageprognose.py`, `10_Vergleich_Zeitreihenmodelle.py` (braucht `statsmodels`) |
 | [`11_Modelltraining`](11_Modelltraining) | Data Leakage: vier verdächtige Stellen (Merkmale, Skalierung, gleicher Kunde), richtige Reihenfolge Aufteilen, Sauber, Trainieren | `11_Loesung_Zusatz_A11-1_Data_Leakage.md`, `11_Demo_Data_Leakage.py` |
 | [`12_Modelloptimierung`](12_Modelloptimierung) | Kreuzvalidierung (k wählen, Folds erklären), Grid Search mit Rechenbudget, Baum gegen lineare Regression | `12_Loesung_Arbeitsauftrag1und2.md`, `12_Demo_CV_und_Grid.py` |
+| [`13_Realtime`](13_Realtime) | Echtzeit oder Nachtlauf, Datenfluss von Quelle bis Entscheidung, Lambda, Automatik oder Mensch, KI-Werkzeuge prüfen | `13_Loesung_Arbeitsauftrag1_Seilschaft.md`, `13_Loesung_Fallstudie_QuickRetail.md`, `13_Loesung_Zusaetze_A13-1_A13-3_A13-4.md`, `13_Demo_Realtime_Rechnungen.py` |
 
 Die Dateien tragen die Nummer des Tages als Präfix (`04_...` gehört zu Tag 4).
 
