@@ -66,7 +66,7 @@ Zwei Farben: **grün = das System entscheidet**, **orange = ein Mensch entscheid
 
 ```mermaid
 flowchart LR
-    subgraph Q["Quellen"]
+    subgraph P["Producer (Quellen)"]
         S["Onlineshop"]
         M["Marktplatz"]
         K["Showroom-Kasse"]
@@ -74,32 +74,71 @@ flowchart LR
         L["Lagerverwaltung"]
     end
 
-    Q --> B[("Ereignis-Log<br/>(Kafka / Queue)")]
+    subgraph KF["Apache Kafka (Broker: append-only Log, Offsets)"]
+        T1[("Topic bestellungen")]
+        T2[("Topic zahlungen")]
+        T3[("Topic bestand-ereignisse<br/>Partition nach Artikel")]
+        T4[("Topic bestand-aktuell")]
+    end
 
-    B --> BS["Bestandsdienst<br/>zählt, reserviert"]
-    B --> PR["Prüfung<br/>Regeln + Score"]
-    B --> DL[("Data Lake<br/>alle Rohdaten")]
+    subgraph FL["Apache Flink (Verarbeitung im Strom)"]
+        F1["Job Bestand<br/>zählt je Artikel, reserviert"]
+        F2["Job Prüfung<br/>Regeln filtern + Score-Modell,<br/>Leitplanken"]
+    end
 
-    BS --> BP["Bestand verfügbar<br/>(Redis / DB)"]
-    BP --> PU["Meldung an Shop<br/>und Marktplatz"]
+    S --> T1
+    M --> T1
+    Z --> T2
+    K --> T3
+    L --> T3
 
-    PR --> E{"Entscheidung"}
+    T1 --> F1
+    T3 --> F1
+    T2 --> F1
+    T1 --> F2
+    T2 --> F2
+
+    R[("Redis (In-Memory)<br/>verfügbarer Bestand,<br/>Kundenmerkmale")]
+    F1 <--> R
+    F2 <--> R
+    F1 -->|schreibt| T4
+
+    subgraph CO["Consumer (lesen im eigenen Tempo)"]
+        C1["Meldung an Marktplatz<br/>und Shop"]
+        C2["Dashboard<br/>Bestand, Prüfquote live"]
+        C3["Archiv-Consumer<br/>schreibt in Data Lake"]
+    end
+    T4 --> C1
+    T4 --> C2
+    T1 --> C3
+    T2 --> C3
+    T3 --> C3
+
+    F2 --> E{"Entscheidung"}
     E -->|klar sauber| FR["automatisch<br/>freigeben"]
     E -->|klar Betrug| AB["automatisch<br/>halten oder ablehnen"]
     E -->|Grenzfall| HQ["Prüfliste<br/>Mensch entscheidet"]
     HQ --> FR
     HQ --> AB
     FR --> LG["Lager packt"]
+    F2 -->|Leitplanke gerissen| AL["Alarm / E-Mail<br/>an Leitung"]
 
-    DL --> NL["Nachtlauf 02:00<br/>Abgleich, Rückbuchungs-Labels,<br/>Modelltraining, Berichte"]
-    NL -.->|Kundenrisiko, neue Regeln| PR
-    NL -.->|Abweichungen korrigieren| BP
+    C3 --> DL[("Data Lake<br/>alle Rohdaten")]
+    DL --> NL["Nachtlauf 02:00 (Batch-Layer)<br/>Abgleich, Rückbuchungs-Labels,<br/>Modelltraining, Berichte"]
+    NL -.->|Kundenrisiko, neue Regeln| R
+    NL -.->|Abweichungen korrigieren| R
+
+    MO["Monitoring<br/>Latenz, Durchsatz, Consumer-Lag, Alarme"]
+    MO -.-> KF
+    MO -.-> FL
 
     classDef sys fill:#d4edda,stroke:#28a745,color:#000
     classDef mensch fill:#ffe5cc,stroke:#e8590c,color:#000
-    class BS,PR,FR,AB,PU,NL,BP sys
+    class F1,F2,C1,C2,C3,FR,AB,NL,AL sys
     class HQ mensch
 ```
+
+Das Diagramm folgt dem Kursmuster der Folien (UE 1): **Producer → Kafka-Topic → Flink → Ausgabe**. Die Ausgaben von Flink gehen entweder zurück in ein Kafka-Topic (dann lesen mehrere **Consumer** unabhängig im eigenen Tempo), in den **In-Memory-Speicher** (Redis, Antwort ohne Plattenzugriff) oder an eine Person/einen Alarm. Zwei Flink-Jobs trennen Bestand und Prüfung, damit der eine den anderen nicht ausbremst.
 
 > [!NOTE]
 > **Merke:** „Hold“ (Bestellung zurückhalten) ist billiger und umkehrbar, „ablehnen“ nicht. Bei Grenzfällen in der Nacht wird nicht gepackt, bis ein Mensch entschieden hat. Die Zahlung wird nur **autorisiert**, die Abbuchung und der Versand folgen erst nach der Prüfung. Das ist der Fall vom 03.06., 23:40.
@@ -110,17 +149,21 @@ flowchart LR
 
 | Baustein | Werkzeug (Beispiel) | Begründung |
 |---|---|---|
-| Ereignis-Log | **Apache Kafka** (oder verwaltet: Confluent Cloud, Azure Event Hubs, AWS Kinesis) | Speichert Ereignisse dauerhaft und lässt sie nach einem Neustart erneut lesen; Reihenfolge je Artikel. |
-| Bestandsdienst | **Kafka Streams** oder **Apache Flink** (Zustand je Artikel) | Zählt zustandsbehaftet und genau-einmal-sicher, mit Latenz im Sekundenbereich. |
-| Verfügbarer Bestand | **Redis** (mit Persistenz) oder PostgreSQL | Abfrage in Millisekunden, atomare Zähler für „reservieren“. |
-| Meldung an Kanäle | Marktplatz-API und Shop-Schnittstelle, **Retry mit Warteschlange** | Jede Änderung wird gemeldet; bei Fehlern erneut senden statt verlieren. |
-| Prüfung | Regeln (z. B. Drools / eigener Regelcode) + **Score-Modell** (scikit-learn, als Dienst) | Regeln für klare Muster (Packstation + Namen), Modell für Feinheiten; beides in Millisekunden. |
+| Producer | Shop, Marktplatz-Schnittstelle, Kasse, Zahlungsanbieter, Lager (Kafka-Producer-Client oder Webhook, der in Kafka schreibt) | Jede Quelle erzeugt das Ereignis und schreibt es einmal ins passende Topic; die Quellen kennen die Empfänger nicht (lose Kopplung). |
+| Ereignis-Log | **Apache Kafka**: Topics `bestellungen`, `zahlungen`, `bestand-ereignisse`, `bestand-aktuell`; Partition nach Artikelnummer (verwaltet z. B. Confluent Cloud, Azure Event Hubs, AWS MSK) | Puffert Lastspitzen, speichert geordnet und ausfallsicher, nach einem Neustart wird ab dem Offset weitergelesen; nichts geht verloren. |
+| Bestandsdienst | **Apache Flink** (Job Bestand, Zustand je Artikel) oder Kafka Streams | Rechnet auf dem Strom, zustandsbehaftet, mit Latenz im Sekundenbereich. |
+| Prüfung | **Apache Flink** (Job Prüfung): Regeln filtern, **Score-Modell** sortiert (wie „Flink + Modell“ bei PhysioNord) | Regeln für klare Muster (Packstation + Namen), Modell für Feinheiten; beides ohne Zwischenspeichern auf Platte. |
+| Verfügbarer Bestand und Merkmale | **Redis** (In-Memory, mit Persistenz) | Antwort ohne Plattenzugriff in Millisekunden; atomare Zähler für „reservieren“. |
+| Kundenhistorie, Ereignisdetails | **NoSQL**, z. B. MongoDB (oder PostgreSQL) | Flexibel bei wachsenden Datenmengen und uneinheitlichen Feldern; wird in den Nachtlauf eingelesen. |
+| Meldung an Kanäle | **Consumer** auf `bestand-aktuell`, ruft die Marktplatz-API auf, Retry mit Warteschlange | Liest im eigenen Tempo; fällt die API aus, bleibt das Ereignis in Kafka und wird später gemeldet. |
+| Dashboard | **Consumer** auf `bestand-aktuell` (z. B. Grafana) | Live-Anzeige von Bestand und Prüfquote, ohne die Verarbeitung zu stören. |
 | Prüfliste | **Ticket-/Workflow-Werkzeug** (z. B. Jira Service, einfache Web-Oberfläche) | Mensch sieht Fall, Gründe und Entscheidungsknopf; jede Entscheidung wird gespeichert. |
-| Data Lake | **S3 / Azure Blob** mit Parquet | Billig, unveränderlich, Grundlage für Nachtlauf und Modelltraining. |
-| Nachtlauf | **Apache Airflow** + **Spark** oder **dbt** + Data Warehouse | Plant und wiederholt den Abgleich, die Berichte und das Training. |
+| Data Lake | **S3 / Azure Blob** mit Parquet, befüllt vom Archiv-Consumer | Billig, unveränderlich, Grundlage für Nachtlauf und Modelltraining. |
+| Nachtlauf (Batch-Layer) | **Apache Airflow** + **Spark** oder **dbt** + Data Warehouse | Plant und wiederholt den Abgleich, die Berichte und das Training. |
+| Monitoring | **Prometheus/Grafana** (Latenz, Durchsatz, Consumer-Lag, Fehlerquote, Alarme) | Ein Echtzeitsystem muss man laufend messen; Ausfälle und schlechte Daten sofort erkennen. |
 
 > [!WARNING]
-> **Kafka + Flink wäre hier überdimensioniert:** 0,08 bis 0,25 Ereignisse pro Sekunde schafft auch eine Datenbank mit Ereignistabelle oder eine verwaltete Queue (AWS SQS, Google Pub/Sub) mit Postgres/Redis. Die Kursantwort (Kafka/Flink) zeigt das Muster; für 45 Mitarbeitende ohne Betriebsteam wäre die **verwaltete, schlanke Variante** die ehrliche Empfehlung. Wichtig sind nicht die Namen, sondern die Eigenschaften: dauerhaftes Log, ein zentraler Bestand, idempotente Verarbeitung.
+> **Kafka + Flink wäre hier überdimensioniert:** 0,08 bis 0,25 Ereignisse pro Sekunde schafft auch eine Datenbank mit Ereignistabelle oder eine verwaltete Queue (AWS SQS, Google Pub/Sub) mit Postgres/Redis. Das Diagramm zeigt das Kursmuster (Kafka und Flink, wie in den Folien); für 45 Mitarbeitende ohne Betriebsteam wäre die **verwaltete, schlanke Variante** die ehrliche Empfehlung. Wichtig sind nicht die Namen, sondern die Eigenschaften: dauerhaftes Log, ein zentraler Bestand, idempotente Verarbeitung.
 
 ---
 
@@ -135,6 +178,15 @@ flowchart LR
 | Regeln und Schwellen pflegen, neue Muster | | x | Verantwortung und Lernen aus Rückbuchungen |
 | Rückbuchung bearbeiten | | x | Einzelfall mit Zahlungsanbieter |
 | Restbestand-Puffer anpassen | | x | betriebswirtschaftliche Abwägung (Verkauf gegen Storno) |
+
+**Leitplanken für die Automatik** (Muster der Folie „PhysioNord: Leitplanken“; Werte sind Beispiele, keine Vorgaben):
+
+| Leitplanke | Wozu |
+|---|---|
+| Automatische Freigabe nur bis zu einem Warenwert (z. B. 500 €) und einer Menge je Artikel (z. B. 3) | Muster wie am 03.06. (vier Suchgeräte je Bestellung, mehrfach) gehen nie ungeprüft durch |
+| Nie mehr Bestand melden, als der Bestandsdienst hält; Puffer ab Bestand ≤ 2 | Überverkauf über die Kanäle begrenzen |
+| Mehr als 10 Holds pro Stunde: Alarm an die Leitung | Häufung hat meist einen Grund (Angriff, Fehler im Zahlungsanbieter); dann entscheidet ein Mensch über die Regel |
+| Ereignisse mit fehlenden Pflichtfeldern oder unmöglichen Werten (negative Menge) in eine Fehler-Queue | **Datenqualität im Fluss prüfen**, nicht erst danach; schlechte Ereignisse stoppen nicht den Rest |
 
 > [!TIP]
 > **Wirkung (grobe Schätzung, nicht aus der Aufgabe):** Wenn die Automatik 95 % der Bestellungen sicher freigibt, bleiben von 1.500 Bestellungen etwa 75 am Tag für die Mitarbeiterin. Wer abends bestellt, bekommt die Freigabe sofort, und der Express-Versand geht am selben Abend raus.
