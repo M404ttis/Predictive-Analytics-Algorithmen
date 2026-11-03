@@ -53,8 +53,8 @@ Aufgabe: Ereignisse in „Echtzeit ja/nein“ einteilen, den Datenfluss von den 
    | Lieferadresse (Packstation, neu?), Kundenhistorie (Neukunde?) | |
    | Zahl der Bestellungen je Packstation/Karte in den letzten Stunden | |
 
-   > [!IMPORTANT]
-   > Das Ergebnis („Rückbuchung“) kennt man erst nach Wochen. Für das Training braucht man deshalb ein **Reifefenster**: nur Bestellungen verwenden, bei denen die Rückbuchungsfrist schon abgelaufen ist, sonst scheinen junge Bestellungen fälschlich „sauber“. Die Rückbuchung darf nie als **Merkmal** in die Echtzeitprüfung (Data Leakage, Tag 11).
+> [!IMPORTANT]
+> Das Ergebnis („Rückbuchung“) kennt man erst nach Wochen. Für das Training braucht man deshalb ein **Reifefenster**: nur Bestellungen verwenden, bei denen die Rückbuchungsfrist schon abgelaufen ist, sonst scheinen junge Bestellungen fälschlich „sauber“. Die Rückbuchung darf nie als **Merkmal** in die Echtzeitprüfung (Data Leakage, Tag 11).
 
 4. **Was passiert mit Ereignissen, die eintreffen, während ein Baustein neu startet?** Sie dürfen nicht verloren gehen. Der Datenstrom wird in einem **persistenten Log** (Kafka o. Ä.) gespeichert; der Baustein merkt sich, wie weit er gelesen hat (Offset/Checkpoint) und liest nach dem Neustart weiter. Weil dabei Ereignisse doppelt ankommen können („mindestens einmal“), muss die Verarbeitung **idempotent** sein (jede Meldung hat eine Ereignis-ID, doppelte werden erkannt). Die Reihenfolge je Artikel bleibt erhalten, wenn man nach Artikelnummer partitioniert.
 
