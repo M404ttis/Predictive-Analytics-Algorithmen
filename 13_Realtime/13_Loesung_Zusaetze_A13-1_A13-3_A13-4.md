@@ -11,14 +11,16 @@
 
 ```mermaid
 flowchart LR
-    E["Ereignis<br/>(Zahlung, Fahrt)"] --> R[("Rohdaten<br/>unveränderlich, append-only")]
-    R --> BL["Batch-Layer<br/>rechnet alles neu aus allen Rohdaten<br/>genau, Stunden alt"]
-    E --> SL["Speed-Layer<br/>rechnet nur das Neue seit dem letzten Batch<br/>aktuell, vorläufig"]
+    E["Ereignis<br/>(Zahlung, Fahrt)"] --> K[("Kafka")]
+    K --> R[("Rohdaten<br/>unveränderlich, append-only")]
+    K --> SL["Speed-Layer<br/>rechnet nur das Neue seit dem letzten Batch<br/>aktuell, vorläufig"]
+    R --> BL["Batch-Layer<br/>rechnet alles neu aus allen Rohdaten<br/>genau, Stunden alt: "]
     BL --> BV[("Batch-Sicht")]
     SL --> SV[("Echtzeit-Sicht")]
     BV --> SE["Serving-Layer<br/>fügt beide zusammen"]
     SV --> SE
-    SE --> Q["Abfrage / Warnung / Abrechnung"]
+    SV --> Warnungen
+    SE --> Q["Abfrage / Abrechnung"]
 ```
 
 ### 1. Was läuft im Speed-, was im Batch-Layer?
