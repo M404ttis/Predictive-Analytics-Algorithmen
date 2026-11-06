@@ -29,6 +29,9 @@ Siehe [`05_Modellauswahl/05_README.md`](05_Modellauswahl/05_README.md): Schritt 
 | [`11_Modelltraining`](11_Modelltraining) | Data Leakage: vier verdächtige Stellen (Merkmale, Skalierung, gleicher Kunde), richtige Reihenfolge Aufteilen, Sauber, Trainieren | `11_Loesung_Zusatz_A11-1_Data_Leakage.md`, `11_Demo_Data_Leakage.py` |
 | [`12_Modelloptimierung`](12_Modelloptimierung) | Kreuzvalidierung (k wählen, Folds erklären), Grid Search mit Rechenbudget, Baum gegen lineare Regression | `12_Loesung_Arbeitsauftrag1und2.md`, `12_Demo_CV_und_Grid.py` |
 | [`13_Realtime`](13_Realtime) | Echtzeit oder Nachtlauf, Datenfluss von Quelle bis Entscheidung, Lambda, Automatik oder Mensch, KI-Werkzeuge prüfen | `13_Loesung_Arbeitsauftrag1_Seilschaft.md`, `13_Loesung_Fallstudie_QuickRetail.md`, `13_Loesung_Zusaetze_A13-1_A13-3_A13-4.md`, `13_Demo_Realtime_Rechnungen.py` |
+| [`14_Dashboards`](14_Dashboards) | Dashboard-Entwurf (Kennzahlen, Filter, Detailseite) und Datenpipeline (ETL, Bereinigungsregeln, Abbruch bei schlechter Datenlage) | `14_Loesung_Arbeitsauftrag1_Dashboard.html` (eigenständig, Bilder eingebettet, öffnet direkt im Browser), `14_Loesung_Arbeitsauftrag2_Pipeline.md`, `penguins_clean.csv` |
+| [`15_Governance`](15_Governance) | Bias-Arten und Fairness, DSGVO, AGG, EU AI Act, Erklärbarkeit, Governance-Rollen; Fallstudie SmartFinance (Kreditscoring) | `15_Loesung_Arbeitsauftrag1und2_Governance.md`, `15_Loesung_Fallstudie_SmartFinance.md` |
+| [`16_Betrieb-und-ROI`](16_Betrieb-und-ROI) | Pflege und Monitoring eines Bestellmodells (Drift, Kennzahlen, Schwellenwerte, Reaktionsplan), ROI und Payback eines Katalogmodells mit Prüfung der Marketing-Meldung | `16_Loesung_Arbeitsauftrag1_Kettenblatt_Pflege-Monitoring.md`, `16_Loesung_Arbeitsauftrag2_Teehaus_ROI.md` |
 
 Die Dateien tragen die Nummer des Tages als Präfix (`04_...` gehört zu Tag 4).
 

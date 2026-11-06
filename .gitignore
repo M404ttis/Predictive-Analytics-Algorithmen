@@ -17,3 +17,6 @@ __pycache__/
 
 # Erzeugte Modelle, Prognosen und Protokolle der MLOps-Pipeline (Tag 10)
 10_MLOPS/artefakte/
+
+# Lokale Kursbeispiele (Tag 16), nicht Teil der Loesungen
+16_Betrieb-und-ROI/html/
