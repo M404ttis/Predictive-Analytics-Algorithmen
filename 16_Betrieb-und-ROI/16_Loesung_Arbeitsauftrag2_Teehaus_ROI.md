@@ -18,6 +18,32 @@
 
 ---
 
+## Begriffe
+
+**ROI (Return on Investment)** misst, wie viel Gewinn jeder eingesetzte Euro bringt.
+
+```
+ROI = (Nutzen − Kosten) / Kosten
+```
+
+- Ergebnis als Prozentwert: 100 % heißt, dass jeder Euro Kosten einen weiteren Euro Gewinn gebracht hat. Unter 0 % lohnt sich die Investition nicht.
+- Der **Nutzen** ist hier der Deckungsbeitrag und die gesparten Druckkosten, nicht der Umsatz.
+- Die **Kosten** umfassen alles, was das Modell kostet (Entwicklung, Einführung, Betrieb, Personal, Neutraining), also die Gesamtkosten (TCO).
+- Beispiel (Basis, Jahr 1): (431.680 € − 130.400 €) / 130.400 € = **2,31 = 231 %**.
+- Grenze: Der ROI sagt nichts darüber, **wann** der Nutzen kommt, und ein hoher ROI auf kleiner Kostenbasis (Jahr 2) ist nicht automatisch besser als ein niedriger auf großer (Jahr 1). Dafür gibt es die Payback Period.
+
+**Payback Period (Amortisationszeit)** ist die Zeit, bis die kumulierten Einnahmen die Anfangsinvestition **zurückgespielt** haben.
+
+```
+Payback = Einmalkosten / (Nutzen je Monat − laufende Kosten je Monat)
+```
+
+- Je kürzer, desto besser, weil weniger Zeit bleibt, in der etwas schiefgehen kann.
+- Beispiel (Basis): 90.000 € / (35.973 € − 3.367 €) = **2,8 Monate**. Da der Nutzen mit jeder Ausgabe (etwa alle drei Monate) kommt, gilt genauer: Payback **nach der ersten Ausgabe**.
+- Grenze: Die Payback Period ignoriert alles, was nach dem Rückfluss passiert, und den Zeitwert des Geldes (dafür gibt es den Kapitalwert, NPV).
+
+---
+
 ## 1. Der Kern in einem Bild
 
 Das Marketing vergleicht die **besten** 120.000 Kunden mit **allen** 220.000. Das ist kein fairer Vergleich, weil die besten Kunden auch ohne Modell mehr kaufen. Fair vergleichbar sind nur die zufällig gezogenen 5.000 mit den übrigen 95.000, denn beide Gruppen sind vom Modell als „nicht ausgewählt“ eingestuft und unterscheiden sich allein durch den Katalog.
